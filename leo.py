@@ -12,6 +12,7 @@ air=0
 grass=1
 wood=3
 leaves=7   
+dirt=4
 
 def mcpy():
     # Initialize the whole world to air (0)
@@ -29,6 +30,8 @@ def mcpy():
     i=gl
     for j in range(0,width):
         world[i][j]=grass
+        world[i+1][j]=dirt
+        world[i+2][j]=dirt
         i=randint(i-1,i+1)
         if i > gl+1:
             i=gl
@@ -39,24 +42,28 @@ def mcpy():
     # indicator toggle pattern
     # note that here the scan order is reversed j around i.
     for j in range(0,width):    
-        ind=0
+        ind=False
         for i in range(0,height):
             if grass==world[i][j]:
-                ind=1
+                ind=True
             else:
-                if ind==0:
+                if ind==False:
                     if world[i][j]!=air:
                         world[i][j]=air
-                else: #ind==1
-                    if world[i][j]!=stone:
+                else: #ind==true
+                    if world[i][j]==air:
                         world[i][j]=stone
 
     # adds trees
+    c=0
     for j in range(3,width-3):
         for i in range(0,height):
             if grass==world[i][j]:
-                if randint(0,6)==0:
+                if randint(0,4)==0 and c<0: 
                     tree(i,j)
+                    c=2
+                else:
+                    c=c-1
 
 
 
