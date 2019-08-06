@@ -1,18 +1,19 @@
 from numpy import * 
 from random import * 
 
+height = 20
+width = 50
+world=ndarray(shape=(height,width), dtype=integer)
+gl=int(floor(height/2)) # Ground level
+
+# Block types
+stone=5
+air=0
+grass=1
+wood=3
+leaves=7   
+
 def mcpy():
-    height = 10
-    width = 50
-    world=ndarray(shape=(height,width), dtype=integer)
-    gl=int(floor(height/2)) # Ground level
-
-    # Block types
-    stone=5
-    air=0
-    grass=1
-
-
     # Initialize the whole world to air (0)
     # *** NESTED (2) ITERATOR PATTERN ***
     for i in range(0,height):
@@ -50,15 +51,43 @@ def mcpy():
                     if world[i][j]!=stone:
                         world[i][j]=stone
 
+    # adds trees
+    for j in range(3,width-3):
+        for i in range(0,height):
+            if grass==world[i][j]:
+                if randint(0,6)==0:
+                    tree(i,j)
+
+
+
+
     # See what we've got!
-    print_world(world) 
+    print_world() 
+
+
+
+
+def tree(i,j):
+    world[i-1][j]=wood
+    world[i-2][j]=wood
+    world[i-3][j-2]=leaves
+    world[i-3][j-1]=leaves
+    world[i-3][j]=wood
+    world[i-3][j+1]=leaves
+    world[i-3][j+2]=leaves
+    world[i-4][j-1]=leaves
+    world[i-4][j]=leaves
+    world[i-4][j+1]=leaves
+    world[i-5][j]=leaves
+
+
+
+
+
 
 # Displays a world
 chars=" -~!@#$%^&*()_+"
-def print_world(world):
-    # Have to get the height and width
-    height = size(world,0)
-    width = size(world,1)
+def print_world():
     for i in range(0,height):
         for j in range(0,width):
             print chars[world[i][j]],
