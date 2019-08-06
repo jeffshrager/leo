@@ -65,14 +65,8 @@ def mcpy():
                 else:
                     c=c-1
 
-
-
-
     # See what we've got!
     print_world() 
-
-
-
 
 def tree(i,j):
     world[i-1][j]=wood
@@ -87,11 +81,6 @@ def tree(i,j):
     world[i-4][j+1]=leaves
     world[i-5][j]=leaves
 
-
-
-
-
-
 # Displays a world
 chars=" -~!@#$%^&*()_+"
 def print_world():
@@ -100,7 +89,7 @@ def print_world():
             print chars[world[i][j]],
         print
 
-mcpy()
+#mcpy()
 
 # iterative factorial
 def ifact(x):
@@ -149,38 +138,33 @@ def ana(a):
 
 #experimenting with curses
 
-"""
 
 # Draw text to center of screen
 import curses
 
-screen = curses.initscr()
-num_rows, num_cols = screen.getmaxyx()
-
 # Make a function to print a line in the center of screen
 def print_center(message):
+    screen = curses.initscr()
+    curses.noecho()
+    num_rows, num_cols = screen.getmaxyx()
     # Calculate center row
     middle_row = int(num_rows / 2)
-
     # Calculate center column, and then adjust starting position based
     # on the length of the message
     half_length_of_message = int(len(message) / 2)
     middle_column = int(num_cols / 2)
     x_position = middle_column - half_length_of_message
-
     # Draw the text
     screen.addstr(middle_row, x_position, message)
     screen.refresh()
-
     # Now go into a loop that read keystrokes and display the characters typed in
     # a random location on the screen, until 'z' is typed, at which point you stop
     while True:
         v=screen.getch()
         screen.addch(randint(1,num_rows-1),randint(1,num_cols-1),v)
-        if v=='zz':
+        if v==ord('z'):
+            curses.endwin()
             break
 
-
 print_center("Hello from the center!")
-curses.endwin()
-"""
+
