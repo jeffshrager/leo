@@ -37,10 +37,11 @@ def mcpy():
         world[i+1][j]=dirt
         world[i+2][j]=dirt
         i=randint(i-1,i+1)
-        if i > gl+1:
+        mtrange = int(height/10)
+        if i > gl+mtrange:
             i=gl
-        if i < gl-2:
-            i=gl-1
+        if i < gl-mtrange:
+            i=gl-mtrange
 
     # fixing the underground/hollow grass
     # indicator toggle pattern
