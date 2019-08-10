@@ -21,79 +21,79 @@ def mcpy():
     global height, width, world, gl, screen
     # Initialize the whole world to air (0)
     # *** NESTED (2) ITERATOR PATTERN ***
-    for i in range(0,height):
-        for j in range(0,width):
-            world[i][j]=air
+    for row in range(0,height):
+        for col in range(0,width):
+            world[row][col]=air
 
     # Generate stone base
-    for i in range(gl,height):
-        for j in range(0,width):
-            world[i][j]=stone
+    for row in range(gl,height):
+        for col in range(0,width):
+            world[row][col]=stone
 
     # add surface variation
-    i=gl
-    for j in range(0,width):
-        world[i][j]=grass
-        world[i+1][j]=dirt
-        world[i+2][j]=dirt
-        i=randint(i-1,i+1)
+    row=gl
+    for col in range(0,width):
+        world[row][col]=grass
+        world[row+1][col]=dirt
+        world[row+2][col]=dirt
+        row=randint(row-1,row+1)
         mtrange = int(height/10)
-        if i > gl+mtrange:
-            i=i-1
-        if i < gl-mtrange:
-            i=i+1
+        if row > gl+mtrange:
+            row=row-1
+        if row < gl-mtrange:
+            row=row+1
 
     # fixing the underground/hollow grass
     # indicator toggle pattern
     # note that here the scan order is reversed j around i.
-    for j in range(0,width):    
+    for col in range(0,width):    
         ind=False
-        for i in range(0,height):
-            if grass==world[i][j]:
+        for row in range(0,height):
+            if grass==world[row][col]:
                 ind=True
             else:
                 if ind==False:
-                    if world[i][j]!=air:
-                        world[i][j]=air
+                    if world[row][col]!=air:
+                        world[row][col]=air
                 else: #ind==true
-                    if world[i][j]==air:
-                        world[i][j]=stone
+                    if world[row][col]==air:
+                        world[row][col]=stone
 
     # adds trees
     c=0
-    for j in range(3,width-3):
-        for i in range(0,height):
-            if grass==world[i][j]:
+    for col in range(3,width-3):
+        for row in range(0,height):
+            if grass==world[row][col]:
                 if randint(0,4)==0 and c<0: 
-                    tree(i,j)
-                    c=2
+                    tree(row,col)
+                    c=4
                 else:
                     c=c-1
 
     # See what we've got!
     print_world() 
 
-def tree(i,j):
+def tree(row,col):
     global height, width, world, gl, screen
-    world[i-1][j]=wood
-    world[i-2][j]=wood
-    world[i-3][j-2]=leaves
-    world[i-3][j-1]=leaves
-    world[i-3][j]=wood
-    world[i-3][j+1]=leaves
-    world[i-3][j+2]=leaves
-    world[i-4][j-1]=leaves
-    world[i-4][j]=leaves
-    world[i-4][j+1]=leaves
-    world[i-5][j]=leaves
+    world[row-1][col]=wood
+    world[row-2][col]=wood
+    world[row-3][col-2]=leaves
+    world[row-3][col-1]=leaves
+    world[row-3][col]=wood
+    world[row-3][col+1]=leaves
+    world[row-3][col+2]=leaves
+    world[row-4][col-1]=leaves
+    world[row-4][col]=leaves
+    world[row-4][col+1]=leaves
+    world[row-5][col]=leaves
 
 # Displays a world
 chars=" -~!@#$%^&*()_+"
 def print_world():
     global height, width, world, gl, screen
-    for i in range(0,height-1):
-        for j in range(0,width-1):
-            screen.addch(i,j,chars[world[i][j]])
+    for row in range(0,height-1):
+        for col in range(0,width-1):
+            screen.addch(row,col,chars[world[row][col]])
 
 # Draw text to center of screen
 import curses
@@ -114,6 +114,9 @@ def run_mcpy():
         if v==ord('z'):
             curses.endwin()
             break
+        if v==ord('r'):
+            screen.refresh()
+            mcpy()
     curses.endwin()
     
 run_mcpy()
