@@ -39,9 +39,9 @@ def mcpy():
         i=randint(i-1,i+1)
         mtrange = int(height/10)
         if i > gl+mtrange:
-            i=gl
+            i=i-1
         if i < gl-mtrange:
-            i=gl-mtrange
+            i=i+1
 
     # fixing the underground/hollow grass
     # indicator toggle pattern
