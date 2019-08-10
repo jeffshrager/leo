@@ -73,7 +73,7 @@ def mcpy():
     # See what we've got!
     print_world() 
 
-def tree(row,col):
+def tree(row,col): 
     global height, width, world, gl, screen
     world[row-1][col]=wood
     world[row-2][col]=wood
@@ -91,15 +91,17 @@ def tree(row,col):
 chars=" -~!@#$%^&*()_+"
 def print_world():
     global height, width, world, gl, screen
-    for row in range(0,height-1):
-        for col in range(0,width-1):
+    # For reasons we don't completely understand this can't go to the full height
+    # Seems like curses can't display in either the bottom row
+    for row in range(0,height-1): 
+        for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
 
 # Draw text to center of screen
 import curses
 
-# Make a function to print a line in the center of screen
-def run_mcpy():
+# 
+def mcpy_curses():
     global height, width, world, gl, screen
     screen = curses.initscr()
     curses.noecho()
@@ -111,13 +113,13 @@ def run_mcpy():
     mcpy()
     while True:
         v=screen.getch()
-        if v==ord('z'):
+        if v==ord('q'):
             curses.endwin()
             break
         if v==ord('r'):
             screen.refresh()
             mcpy()
-    curses.endwin()
+    curses.endwin() # Give us normal window control back
     
-run_mcpy()
-curses.endwin()
+mcpy_curses() # Call the main function
+curses.endwin() # Give us normal window control back
