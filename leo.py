@@ -1,3 +1,12 @@
+# To do:
+#   Add simple player (*) and allow to move around
+#   Add caves
+#   Allow player to break blocks
+#   Add player inventory
+#   Add mobs
+#   Refactor trees so there can be variety
+
+import curses
 from numpy import * 
 from random import * 
 
@@ -97,10 +106,6 @@ def print_world():
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
 
-# Draw text to center of screen
-import curses
-
-# 
 def mcpy_curses():
     global height, width, world, gl, screen
     screen = curses.initscr()
