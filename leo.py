@@ -1,10 +1,13 @@
 from numpy import * 
 from random import * 
 
+global height, width, world, gl, screen
+
 height = 20
 width = 75
-world=ndarray(shape=(height,width), dtype=integer)
+world = False # Gets set in run_mcpy by curses
 gl=int(floor(height/2)) # Ground level
+screen = False # Gets set in run_mcpy by curses
 
 # Block types
 stone=5
@@ -15,6 +18,7 @@ leaves=7
 dirt=4
 
 def mcpy():
+    global height, width, world, gl, screen
     # Initialize the whole world to air (0)
     # *** NESTED (2) ITERATOR PATTERN ***
     for i in range(0,height):
@@ -69,6 +73,7 @@ def mcpy():
     print_world() 
 
 def tree(i,j):
+    global height, width, world, gl, screen
     world[i-1][j]=wood
     world[i-2][j]=wood
     world[i-3][j-2]=leaves
@@ -84,87 +89,31 @@ def tree(i,j):
 # Displays a world
 chars=" -~!@#$%^&*()_+"
 def print_world():
-    for i in range(0,height):
-        for j in range(0,width):
-            print chars[world[i][j]],
-        print
-
-#mcpy()
-
-# iterative factorial
-def ifact(x):
-    r=1 # initialize the result
-    # multiply in each num from 1 to x
-    for c in range(1,x+1):
-        r=c*r
-    return r # return the result, whick should be the factorial.
-
-#print(ifact(5))
-
-
-# recursive factorial
-def rfact(x):
-    if x==1: # bottom condition: the factorial of 1 is 1!
-        return 1
-    else: # recursion condition
-        return x*rfact(x-1) # the factorial of x is x * the factorial of x-1
-    
-#print(rfact(5))
-
-btree=['bark?',['dog',None,None],['big?',['tiger',None,None],['cat',None,None]]]
-atree=['bark?',['dog',None,None],['big?',["stripes",['tiger',None,None],['elephant',None,None]],['cat',None,None]]]
-
-def ana(a):
-    if a[1]==None:
-        gotit = raw_input('Is this a ' + a[0] + "?")
-        if gotit=='y':
-            print('yay!')
-        else:
-            nana= raw_input('What animal were you thinking of?')
-            nq= raw_input('Give me a question for which the answer is YES for a ' + a[0] + ' and NO for a ' + nana)
-            a[1]=[a[0],None,None]
-            a[2]=[nana,None,None]
-            a[0]=nq
-    else:
-        ans=raw_input(a[0])
-        if ans=='y':
-            ana(a[1])
-        else:
-            ana(a[2])
-    ana(atree)
-
-
-#ana(atree)
-
-#experimenting with curses
-
+    global height, width, world, gl, screen
+    for i in range(0,height-1):
+        for j in range(0,width-1):
+            screen.addch(i,j,chars[world[i][j]])
 
 # Draw text to center of screen
 import curses
 
 # Make a function to print a line in the center of screen
-def print_center(message):
+def run_mcpy():
+    global height, width, world, gl, screen
     screen = curses.initscr()
     curses.noecho()
-    num_rows, num_cols = screen.getmaxyx()
+    height, width = screen.getmaxyx()
+    world=ndarray(shape=(height,width), dtype=integer)
     # Calculate center row
-    middle_row = int(num_rows / 2)
-    # Calculate center column, and then adjust starting position based
-    # on the length of the message
-    half_length_of_message = int(len(message) / 2)
-    middle_column = int(num_cols / 2)
-    x_position = middle_column - half_length_of_message
-    # Draw the text
-    screen.addstr(middle_row, x_position, message)
+    gl = int(height / 2)
     screen.refresh()
-    # Now go into a loop that read keystrokes and display the characters typed in
-    # a random location on the screen, until 'z' is typed, at which point you stop
+    mcpy()
     while True:
         v=screen.getch()
-        screen.addch(randint(1,num_rows-1),randint(1,num_cols-1),v)
         if v==ord('z'):
             curses.endwin()
             break
-
-print_center("Hello from the center!")
-
+    curses.endwin()
+    
+run_mcpy()
+curses.endwin()
