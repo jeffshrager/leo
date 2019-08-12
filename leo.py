@@ -82,14 +82,14 @@ def mcpy():
     for row in range(3,height-3):
         for col in range(3,width-3):
             if stone==world[row][col]:
-                if randint(0,85)==0: 
-                    cave(row,col,randint(1,5))
+                if randint(0,55)==0: 
+                    cave(row,col,randint(1,6))
     # adds trees
     c=0
     for col in range(3,width-3):
         for row in range(0,height):
             if grass==world[row][col]:
-                if randint(0,4)==0 and c<0: 
+                if randint(0,randint(1,11))==0 and c<0: 
                     tree(row,col)
                     c=4
                 else:
@@ -114,6 +114,12 @@ def tree(row,col):
 
 def cave(row,col,age):
     global height, width, world, gl, screen
+    if world[row][col]==air:        
+            world[row][col+1]=air
+            world[row+1][col]=air
+            world[row][col-1]=air
+            world[row-1][col]=air
+            return True
     if row>3 and col>3 and row<height-3 and col<width-3 and randint(1,4)>2:
         if age==0:
             world[row][col]=air
