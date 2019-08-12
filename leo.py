@@ -35,7 +35,9 @@ grass=1
 wood=3
 leaves=7   
 dirt=4
-
+coal=9
+iron=2
+gold=6
 def mcpy():
     global height, width, world, gl, screen
     # Initialize the whole world to air (0)
@@ -94,7 +96,16 @@ def mcpy():
                     c=4
                 else:
                     c=c-1
-
+    # adds ores
+    for col in range(3,width-3):
+        for row in range(0,height):
+            if stone==world[row][col]:
+                if randint(1,100)==1 and randint(1,19)<11: 
+                    world[row][col]=coal
+                if randint(1,100)==1 and randint(1,19)<7:
+                    world[row][col]=iron
+                if randint(1,100)==1 and randint(1,19)<4:
+                    world[row][col]=gold
     # See what we've got!
     print_world() 
 
