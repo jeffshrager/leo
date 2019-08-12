@@ -1,10 +1,20 @@
 # To do:
-#   Add simple player (*) and allow to move around
 #   Add caves
-#   Allow player to break blocks
+#   Add simple player (*) and allow to move around
+#   Allow player to break blocks and place blocks
 #   Add player inventory
 #   Add mobs
+#  Day-night cycle
+#  Use pygame for textures
+#  water,lava,sand,glass,wood planks
+#  main menu, with 'new world' 'load world', and'options'
+# ability to save worlds
+#  Add biomes
+# 'survival' mode
+#  crafting
 #   Refactor trees so there can be variety
+# render distance
+# multiplayer?
 
 import curses
 from numpy import * 
@@ -78,6 +88,13 @@ def mcpy():
                     c=4
                 else:
                     c=c-1
+    # adds caves
+    for col in range(3,width-3):
+        for row in range(3,height-3):
+            if stone==world[row][col]:
+                if randint(0,60)==0: 
+                    cave(row,col)
+                    
 
     # See what we've got!
     print_world() 
@@ -95,6 +112,17 @@ def tree(row,col):
     world[row-4][col]=leaves
     world[row-4][col+1]=leaves
     world[row-5][col]=leaves
+
+def cave(row,col):
+    world[row][col]=air
+    world[row-1][col]=air
+    world[row-1][col-1]=air
+    world[row][col-1]=air
+    world[row+1][col]=air
+    world[row+1][col+1]=air
+    world[row][col+1]=air
+    world[row][col]=air
+    world[row][col]=air
 
 # Displays a world
 chars=" -~!@#$%^&*()_+"
