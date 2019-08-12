@@ -151,10 +151,10 @@ def mcpy_curses():
     mcpy()
     while True:
         v=screen.getch()
-        if v==ord('q'):
+        if v==ord('l'):
             curses.endwin()
             break
-        if v==ord('r'):
+        if v==ord('n'):
             screen.refresh()
             mcpy()
     curses.endwin() # Give us normal window control back
