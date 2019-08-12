@@ -78,6 +78,12 @@ def mcpy():
                     if world[row][col]==air:
                         world[row][col]=stone
 
+    # adds caves
+    for row in range(3,height-3):
+        for col in range(3,width-3):
+            if stone==world[row][col]:
+                if randint(0,85)==0: 
+                    cave(row,col,randint(1,5))
     # adds trees
     c=0
     for col in range(3,width-3):
@@ -88,12 +94,6 @@ def mcpy():
                     c=4
                 else:
                     c=c-1
-    # adds caves
-    for row in range(3,height-3):
-        for col in range(3,width-3):
-            if stone==world[row][col]:
-                if randint(0,60)==0: 
-                    cave(row,col,randint(1,4))
 
     # See what we've got!
     print_world() 
