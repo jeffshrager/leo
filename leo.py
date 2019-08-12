@@ -114,7 +114,7 @@ def tree(row,col):
 
 def cave(row,col,age):
     global height, width, world, gl, screen
-    if row>3 and col>3 and row<height-3 and col<width-3:
+    if row>3 and col>3 and row<height-3 and col<width-3 and randint(1,4)>2:
         if age==0:
             world[row][col]=air
         else:
