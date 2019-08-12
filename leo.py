@@ -154,7 +154,7 @@ def print_world():
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Minecraft Alpha 1.1.0_01")
+    screen.addstr(0, 0, "Pycraft  Alpha 1.1.1_02")
 
 def mcpy_curses():
     global height, width, world, gl, screen
