@@ -20,30 +20,24 @@ import curses
 from numpy import * 
 from random import * 
 
+global height, width, world, gl, screen, player
+
 class person:
   def __init__(self, row, col):
     self.row = row
     self.col = col
 
-global height, width, world, gl, screen, player
-
-height = False
-width = False
-world = False # Gets set in run_mcpy by curses
-gl=False
-screen = False # Gets set in run_mcpy by curses
-player= False
-
+chars=" -~!@#$%^&*()_+"
 # Block types
-stone=5
 air=0
 grass=1
-wood=3
-leaves=7   
-dirt=4
-coal=9
 iron=2
+wood=3
+dirt=4
+stone=5
 gold=6
+leaves=7   
+coal=9
 
 def mcpy():
     global height, width, world, gl, screen, player
@@ -124,7 +118,7 @@ def mcpy():
     print_world() 
 
 def tree(row,col): 
-    global height, width, world, gl, screen
+    global height, width, world, gl, screen, player
     world[row-1][col]=wood
     world[row-2][col]=wood
     world[row-3][col-2]=leaves
@@ -160,7 +154,6 @@ def cave(row,col,age):
             cave(row+1,col-1,age-1)
 
 # Displays a world
-chars=" -~!@#$%^&*()_+"
 def print_world():
     global height, width, world, gl, screen, player
     # For reasons we don't completely understand this can't go to the full height
@@ -168,7 +161,7 @@ def print_world():
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Pycraft  Alpha 1.1.1_03")
+    screen.addstr(0, 0, "Pycraft  Alpha 1.1.1_03OA")
     screen.addch(player.row,player.col,'*')
 
 def mcpy_curses():
