@@ -1,7 +1,6 @@
 # To do:
-#   Add caves
-#   Add simple player (*) and allow to move around
-#   Allow player to break blocks and place blocks
+
+#   Allow player to place blocks
 #   Add player inventory
 #   Add mobs
 #  Day-night cycle
@@ -9,8 +8,8 @@
 #  water,lava,sand,glass,wood planks
 #  main menu, with 'new world' 'load world', and'options'
 # ability to save worlds
+# 'survival' mode(no flight, slower speed, health, limited resourses)
 #  Add biomes
-# 'survival' mode
 #  crafting
 #   Refactor trees so there can be variety
 # render distance
@@ -195,7 +194,7 @@ def mcpy_curses():
         if v == curses.KEY_MOUSE:
           _, col, row, _, _ = curses.getmouse()
           d=sqrt(((row-player.row)**2)+((col-player.col)**2))
-          if d<5 :
+          if d<5 and d>0.5: # 0.5 keeps you from erasing player
             screen.addch(row, col,' ')
             world[row][col]=air
           
