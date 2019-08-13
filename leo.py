@@ -15,7 +15,7 @@
 #   Refactor trees so there can be variety
 # render distance
 # multiplayer?
-
+import time
 import curses
 from numpy import * 
 from random import * 
@@ -161,7 +161,7 @@ def print_world():
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Pycraft  Alpha 1.1.1_03OA")
+    screen.addstr(0, 0, "Pycraft Alpha 1.2.0")
     screen.addch(player.row,player.col,'*')
 
 def mcpy_curses():
@@ -181,7 +181,29 @@ def mcpy_curses():
         if v==ord('n'):
             screen.refresh()
             mcpy()
+        if v==ord('w'):
+            moveplayer(player.row-1,player.col)
+        if v==ord('a'):
+            moveplayer(player.row,player.col-1)
+        if v==ord('d'):
+            moveplayer(player.row,player.col+1)
+        if v==ord('s'):
+            moveplayer(player.row+1,player.col)
+        
     curses.endwin() # Give us normal window control back
+    
+
+def moveplayer(nrow,ncol):
+    global height, width, world, gl, screen, player
+    if nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0 or world[nrow][ncol]!=air:
+        True
+    else:
+        screen.addch(player.row,player.col,' ')
+        player.row=nrow
+        player.col=ncol
+        screen.addch(player.row,player.col,'*')
+        screen.addch(0,0,'P')
+
     
 mcpy_curses() # Call the main function
 curses.endwin() # Give us normal window control back
