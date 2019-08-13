@@ -161,7 +161,7 @@ def print_world():
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Pycraft Alpha 1.2.0")
+    screen.addstr(0, 0, "Pycraft Alpha 1.3.0")
     screen.addch(player.row,player.col,'*')
 
 def mcpy_curses():
@@ -194,8 +194,11 @@ def mcpy_curses():
             moveplayer(player.row+1,player.col)
         if v == curses.KEY_MOUSE:
           _, col, row, _, _ = curses.getmouse()
-          screen.addch(row, col,' ')
-          world[row][col]=air
+          d=sqrt(((row-player.row)**2)+((col-player.col)**2))
+          if d<5 :
+            screen.addch(row, col,' ')
+            world[row][col]=air
+          
         
     curses.endwin() # Give us normal window control back
     
