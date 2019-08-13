@@ -167,6 +167,9 @@ def print_world():
 def mcpy_curses():
     global height, width, world, gl, screen, player
     screen = curses.initscr()
+    curses.curs_set(0) 
+    screen.keypad(1) 
+    curses.mousemask(1)
     curses.noecho()
     height, width = screen.getmaxyx()
     world=ndarray(shape=(height,width), dtype=integer)
@@ -189,6 +192,10 @@ def mcpy_curses():
             moveplayer(player.row,player.col+1)
         if v==ord('s'):
             moveplayer(player.row+1,player.col)
+        if v == curses.KEY_MOUSE:
+          _, col, row, _, _ = curses.getmouse()
+          screen.addch(row, col,' ')
+          world[row][col]=air
         
     curses.endwin() # Give us normal window control back
     
@@ -205,5 +212,8 @@ def moveplayer(nrow,ncol):
         screen.addch(0,0,'P')
 
     
+
 mcpy_curses() # Call the main function
 curses.endwin() # Give us normal window control back
+
+
