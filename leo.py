@@ -176,13 +176,36 @@ def print_world():
     screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01")
     screen.addch(player.row,player.col,'*')
 
+from threading import Timer,Thread,Event
+
+class perpetualTimer():
+
+   def __init__(self,t,hFunction):
+      self.t=t
+      self.hFunction = hFunction
+      self.thread = Timer(self.t,self.handle_function)
+
+   def handle_function(self):
+      self.hFunction()
+      self.thread = Timer(self.t,self.handle_function)
+      self.thread.start()
+
+   def start(self):
+      self.thread.start()
+
+   def cancel(self):
+      self.thread.cancel()
+
 def fall():
   moveplayer(player.row+1,player.col)
   moveplayer(player.row+2,player.col)
   screen.addstr(0,20+int(player.health),'*')
   player.health=player.health-1
+
+global t
+
 def mcpy_curses():
-    global height, width, world, gl, screen, player, survival
+    global height, width, world, gl, screen, player, survival, t
     screen = curses.initscr()
     curses.curs_set(0) 
     screen.keypad(1) 
@@ -194,14 +217,10 @@ def mcpy_curses():
     gl = int(height / 2)
     mcpy()
     holding=air # Default placing to air (== breaking???)
+    # Start perpetual fall process for Survival
+    t = perpetualTimer(1,fall)
     while True:
         v=screen.getch()
-        # Everything between here and the ==== comment below gets done once per keystroke
-        if survival: 
-          t = Timer(0.1, fall)
-          t.start()
-          screen.addstr(0,20+int(player.health),' ')
-        # Everything between here and the ==== comment above gets done once per keystroke
         if v==ord('l'):
             curses.endwin()
             break
@@ -211,12 +230,12 @@ def mcpy_curses():
         if v==ord('m'):
           if survival:
             survival = False
+            t.cancel()
             screen.addch(0, width-1,'C')
           else:
             survival=True
+            t.start()
             screen.addch(0, width-1,'S')
-        if v==ord('j'):
-          survival=False
         if v==ord('w'):
           moveplayer(player.row-1,player.col)
         if v==ord('a'):
