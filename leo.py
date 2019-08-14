@@ -26,8 +26,8 @@ class person:
     self.row = row
     self.col = col
 
-chars=" -~!@#$%^&*()_+"
-# Block types
+chars=" -~!@#$%^&*()_+="
+# Block types (do not use 10)
 air=0
 grass=1
 iron=2
@@ -36,8 +36,13 @@ dirt=4
 stone=5
 gold=6
 leaves=7   
+sand=8
 coal=9
-
+diamond=11
+woodplank=12
+slab=13
+cobblestone=14
+water=15
 def mcpy():
     global height, width, world, gl, screen, player
     # Initialize the whole world to air (0)
@@ -106,6 +111,8 @@ def mcpy():
                     world[row][col]=iron
                 if randint(1,100)==1 and randint(1,19)<4:
                     world[row][col]=gold
+                if randint(1,100)==1 and randint(1,19)<2:
+                     world[row][col]=diamond
 
     # Player 
     col=int(floor(width/2))
@@ -175,6 +182,7 @@ def mcpy_curses():
     # Calculate center row
     gl = int(height / 2)
     mcpy()
+    holding=woodplank
     while True:
         v=screen.getch()
         if v==ord('l'):
@@ -191,14 +199,15 @@ def mcpy_curses():
             moveplayer(player.row,player.col+1)
         if v==ord('s'):
             moveplayer(player.row+1,player.col)
+        if v==ord('e'):
+          holding=(holding+1)%15
+          screen.addch(1,width-1,chars[holding])
         if v == curses.KEY_MOUSE:
           _, col, row, _, _ = curses.getmouse()
           d=sqrt(((row-player.row)**2)+((col-player.col)**2))
           if d<5 and d>0.5: # 0.5 keeps you from erasing player
-            screen.addch(row, col,' ')
-            world[row][col]=air
-          
-        
+            screen.addch(row, col,chars[holding])
+            world[row][col]=holding
     curses.endwin() # Give us normal window control back
     
 
