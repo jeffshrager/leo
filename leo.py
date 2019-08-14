@@ -119,7 +119,18 @@ def mcpy():
                     world[row][col]=gold
                 if randint(1,100)==1 and randint(1,19)<2 and row>20:
                      world[row][col]=diamond
-
+    '''
+    # adds lakes
+    for col in range(8,width-8):
+      for row in range(0,height):
+        if grass==world[row][col]:
+          if randint(1,80)==1:
+            for i in range(1,randint(1,30)):
+              world[randint(row-5,row+5)][randint(col-5,col+5)]=water
+              i=i+1
+    '''
+        
+    
     # Player 
     col=int(floor(width/2))
     for row in range(0,height-1):
@@ -258,7 +269,7 @@ def mcpy_curses():
 
 def moveplayer(nrow,ncol):
     global height, width, world, gl, screen, player
-    if nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0 or world[nrow][ncol]!=air:
+    if nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0 or world[nrow][ncol]!=air or water:
         True
     else:
         screen.addch(player.row,player.col,' ')
