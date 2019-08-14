@@ -18,14 +18,15 @@ import time
 import curses
 from numpy import * 
 from random import * 
+from threading import Timer
 
-global height, width, world, gl, screen, player
+global height, width, world, gl, screen, player, survival
 
 class person:
   def __init__(self, row, col):
     self.row = row
     self.col = col
-
+survival=False
 chars=" -~!@#$%^&*()_+="
 # Block types (do not use 10)
 air=0
@@ -170,8 +171,12 @@ def print_world():
     screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01")
     screen.addch(player.row,player.col,'*')
 
+def fall():
+  moveplayer(player.row+1,player.col)
+  moveplayer(player.row+2,player.col)
+
 def mcpy_curses():
-    global height, width, world, gl, screen, player
+    global height, width, world, gl, screen, player, survival
     screen = curses.initscr()
     curses.curs_set(0) 
     screen.keypad(1) 
@@ -182,17 +187,29 @@ def mcpy_curses():
     # Calculate center row
     gl = int(height / 2)
     mcpy()
-    holding=woodplank
+    holding=air # Default placing to air (== breaking???)
     while True:
         v=screen.getch()
+        if survival: 
+          t = Timer(0.1, fall)
+          t.start() 
         if v==ord('l'):
             curses.endwin()
             break
         if v==ord('n'):
             screen.refresh()
             mcpy()
+        if v==ord('m'):
+          if survival:
+            survival = False
+            screen.addch(0, width-1,'C')
+          else:
+            survival=True
+            screen.addch(0, width-1,'S')
+        if v==ord('j'):
+          survival=False
         if v==ord('w'):
-            moveplayer(player.row-1,player.col)
+          moveplayer(player.row-1,player.col)
         if v==ord('a'):
             moveplayer(player.row,player.col-1)
         if v==ord('d'):
@@ -201,7 +218,7 @@ def mcpy_curses():
             moveplayer(player.row+1,player.col)
         if v==ord('e'):
           holding=(holding+1)%15
-          screen.addch(1,width-1,chars[holding])
+          screen.addch(0,width-2,chars[holding])
         if v == curses.KEY_MOUSE:
           _, col, row, _, _ = curses.getmouse()
           d=sqrt(((row-player.row)**2)+((col-player.col)**2))
