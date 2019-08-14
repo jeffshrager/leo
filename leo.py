@@ -105,13 +105,13 @@ def mcpy():
     for col in range(3,width-3):
         for row in range(0,height):
             if stone==world[row][col]:
-                if randint(1,100)==1 and randint(1,19)<11: 
+                if randint(1,25)==1 and randint(1,19)<11: 
                     world[row][col]=coal
-                if randint(1,100)==1 and randint(1,19)<7:
+                if randint(1,45)==1 and randint(1,19)<7:
                     world[row][col]=iron
-                if randint(1,100)==1 and randint(1,19)<4:
+                if randint(1,80)==1 and randint(1,19)<4 and row>30:
                     world[row][col]=gold
-                if randint(1,100)==1 and randint(1,19)<2:
+                if randint(1,100)==1 and randint(1,19)<2 and row>20:
                      world[row][col]=diamond
 
     # Player 
@@ -167,7 +167,7 @@ def print_world():
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Pycraft Alpha 1.3.0")
+    screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01")
     screen.addch(player.row,player.col,'*')
 
 def mcpy_curses():
