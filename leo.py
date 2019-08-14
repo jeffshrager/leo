@@ -26,8 +26,12 @@ class person:
   def __init__(self, row, col):
     self.row = row
     self.col = col
+    self.health = 20
+
 survival=False
+
 chars=" -~!@#$%^&*()_+="
+
 # Block types (do not use 10)
 air=0
 grass=1
@@ -44,6 +48,7 @@ woodplank=12
 slab=13
 cobblestone=14
 water=15
+
 def mcpy():
     global height, width, world, gl, screen, player
     # Initialize the whole world to air (0)
@@ -174,7 +179,8 @@ def print_world():
 def fall():
   moveplayer(player.row+1,player.col)
   moveplayer(player.row+2,player.col)
-
+  screen.addstr(0,20+int(player.health),'*')
+  player.health=player.health-1
 def mcpy_curses():
     global height, width, world, gl, screen, player, survival
     screen = curses.initscr()
@@ -190,9 +196,12 @@ def mcpy_curses():
     holding=air # Default placing to air (== breaking???)
     while True:
         v=screen.getch()
+        # Everything between here and the ==== comment below gets done once per keystroke
         if survival: 
           t = Timer(0.1, fall)
-          t.start() 
+          t.start()
+          screen.addstr(0,20+int(player.health),' ')
+        # Everything between here and the ==== comment above gets done once per keystroke
         if v==ord('l'):
             curses.endwin()
             break
