@@ -212,6 +212,43 @@ def fall():
   moveplayer(player.row+2,player.col)
   screen.addstr(0,20+int(player.health),'*')
   player.health=player.health-1
+      
+def do_per_keystroke_tasks():
+  flow_water()
+
+def flow_water():
+  # Scan the whole world for water:
+  for row in range(0,height):
+    for col in range(3,width-3):
+      # When you find a water elt...
+      if world[row][col]==water:
+        # Check below, and flow down if it's open
+        if world[row+1][col]==air:
+          flowto(row,col,row+1,col)
+        else: 
+            # Prioritize either left or right
+            if 1==randint(1,2):
+              if world[row+1][col-1]==air:
+                flowto(row,col,row+1,col-1)
+              else:
+                if world[row+1][col+1]==air:
+                  flowto(row,col,row+1,col+1)
+            else:
+              if world[row+1][col+1]==air:
+                flowto(row,col,row+1,col+1)
+              else:
+                if world[row+1][col-1]==air:
+                  flowto(row,col,row+1,col-1)
+
+def flowto(rowfrom,colfrom,rowto,colto):
+  screen.addch(rowto,colto,'=')
+  world[rowto][colto]=water
+  screen.addch(rowfrom,colfrom,' ')
+  world[rowfrom][colfrom]=air
+
+
+
+
 
 global t
 
@@ -232,6 +269,7 @@ def mcpy_curses():
     t = perpetualTimer(1,fall)
     while True:
         v=screen.getch()
+        do_per_keystroke_tasks()
         if v==ord('l'):
             curses.endwin()
             break
@@ -256,7 +294,7 @@ def mcpy_curses():
         if v==ord('s'):
             moveplayer(player.row+1,player.col)
         if v==ord('e'):
-          holding=(holding+1)%15
+          holding=(holding+1)%16
           screen.addch(0,width-2,chars[holding])
         if v == curses.KEY_MOUSE:
           _, col, row, _, _ = curses.getmouse()
@@ -269,10 +307,10 @@ def mcpy_curses():
 
 def moveplayer(nrow,ncol):
     global height, width, world, gl, screen, player
-    if nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0 or world[nrow][ncol]!=air or water:
+    if (nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0) or not(world[nrow][ncol]==air or world[nrow][ncol]==water):
         True
     else:
-        screen.addch(player.row,player.col,' ')
+        screen.addch(player.row,player.col,chars[world[player.row][player.col]])
         player.row=nrow
         player.col=ncol
         screen.addch(player.row,player.col,'*')
