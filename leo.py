@@ -20,17 +20,18 @@ from numpy import *
 from random import * 
 from threading import Timer
 
-global height, width, world, gl, screen, player, survival
+global height, width, world, gl, screen, player, survival, mobs
 
-class person:
-  def __init__(self, row, col):
+class ent:
+  def __init__(self, row, col, type):
     self.row = row
     self.col = col
     self.health = 20
+    self.type = type
 
 survival=False
-
-chars=" -~!@#$%^&*()_+="
+mobs=[]
+chars=" -~!@#$%^&*()_+=     *ZC"
 
 # Block types (do not use 10)
 air=0
@@ -49,8 +50,13 @@ slab=13
 cobblestone=14
 water=15
 
+person=20
+zombie=21
+creeper=22
+
 def mcpy():
-    global height, width, world, gl, screen, player
+    global height, width, world, gl, screen, player, survival, mobs
+    mobs=[]
     # Initialize the whole world to air (0)
     # *** NESTED (2) ITERATOR PATTERN ***
     for row in range(0,height):
@@ -135,8 +141,17 @@ def mcpy():
     col=int(floor(width/2))
     for row in range(0,height-1):
         if air!=world[row][col]:
-            player=person(row-1,col)
+            player=ent(row-1,col,person)
             break
+    # Mobs
+    for i in range(1,10):
+      col=randint(3,width-3)
+      newmob = ent(height-2,col,randint(22,23))
+      for row in range(height-2,2,-1):
+        if air==world[row][col]:
+          newmob.row=row
+          mobs=mobs+[newmob]
+          break
     # See what we've got!
     print_world() 
 
@@ -178,7 +193,7 @@ def cave(row,col,age):
 
 # Displays a world
 def print_world():
-    global height, width, world, gl, screen, player
+    global height, width, world, gl, screen, player, survival, mobs
     # For reasons we don't completely understand this can't go to the full height
     # Seems like curses can't display in either the bottom row
     for row in range(0,height-1): 
@@ -186,8 +201,14 @@ def print_world():
             screen.addch(row,col,chars[world[row][col]])
     screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01")
     screen.addch(player.row,player.col,'*')
+    drawmobs()
 
-from threading import Timer,Thread,Event
+def drawmobs():
+    for mob in mobs:
+      screen.addch(mob.row,mob.col,chars[mob.type])
+    screen.addstr(1,1,str(randint(1,6)))
+
+from threading import *
 
 class perpetualTimer():
 
@@ -216,6 +237,9 @@ def fall():
 def do_per_keystroke_tasks():
   flow_water()
   sand_fall()
+  mobaction()
+  print_world()
+
 def flow_water():
   # Scan the whole world for water:
   for row in range(0,height):
@@ -224,21 +248,22 @@ def flow_water():
       if world[row][col]==water:
         # Check below, and flow down if it's open
         if world[row+1][col]==air:
-          flowto(row,col,row+1,col)
+          fallto(row,col,row+1,col,water)
         else: 
             # Prioritize either left or right
             if 1==randint(1,2):
               if world[row+1][col-1]==air:
-                flowto(row,col,row+1,col-1)
+                fallto(row,col,row+1,col-1,water)
               else:
                 if world[row+1][col+1]==air:
-                  flowto(row,col,row+1,col+1)
+                  fallto(row,col,row+1,col+1,water)
             else:
               if world[row+1][col+1]==air:
-                flowto(row,col,row+1,col+1)
+                fallto(row,col,row+1,col+1,water)
               else:
                 if world[row+1][col-1]==air:
-                  flowto(row,col,row+1,col-1)
+                  fallto(row,col,row+1,col-1,water)
+
 def sand_fall():
   # Scan the whole world for sand:
   for row in range(0,height):
@@ -247,27 +272,27 @@ def sand_fall():
       if world[row][col]==sand:
         # Check below, and fall down if it's open
         if world[row+1][col]==air:
-          fallto(row,col,row+1,col)
-       
-def flowto(rowfrom,colfrom,rowto,colto):
-  screen.addch(rowto,colto,'=')
-  world[rowto][colto]=water
+          fallto(row,col,row+1,col,sand)
+
+
+def mobaction():
+    for mob in mobs:
+      newcol = mob.col + randint(1,3)-2
+      newrow = mob.row + randint(1,3)-2
+      if world[newrow][newcol]==air:
+        mob.row=newrow
+        mob.col=newcol
+
+def fallto(rowfrom,colfrom,rowto,colto,block):
+  screen.addch(rowto,colto,chars[block])
+  world[rowto][colto]=block
   screen.addch(rowfrom,colfrom,' ')
   world[rowfrom][colfrom]=air
-def fallto(rowfrom,colfrom,rowto,colto):
-  screen.addch(rowto,colto,'^')
-  world[rowto][colto]=sand
-  screen.addch(rowfrom,colfrom,' ')
-  world[rowfrom][colfrom]=air
-
-
-
-
 
 global t
 
 def mcpy_curses():
-    global height, width, world, gl, screen, player, survival, t
+    global height, width, world, gl, screen, player, survival, mobs
     screen = curses.initscr()
     curses.curs_set(0) 
     screen.keypad(1) 
@@ -320,7 +345,7 @@ def mcpy_curses():
     
 
 def moveplayer(nrow,ncol):
-    global height, width, world, gl, screen, player
+    global height, width, world, gl, screen, player, survival, mobs
     if (nrow>height-2 or nrow<2 or ncol>width-1 or ncol<0) or not(world[nrow][ncol]==air or world[nrow][ncol]==water):
         True
     else:
