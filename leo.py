@@ -251,7 +251,7 @@ def sand_fall():
        
 def flowto(rowfrom,colfrom,rowto,colto):
   screen.addch(rowto,colto,'=')
-  world[rowto][colto]=sand
+  world[rowto][colto]=water
   screen.addch(rowfrom,colfrom,' ')
   world[rowfrom][colfrom]=air
 def fallto(rowfrom,colfrom,rowto,colto):
