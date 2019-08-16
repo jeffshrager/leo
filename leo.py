@@ -277,9 +277,9 @@ def sand_fall():
 
 def mobaction():
     for mob in mobs:
-      newcol = mob.col + randint(1,3)-2
-      newrow = mob.row + randint(1,3)-2
-      if world[newrow][newcol]==air:
+      newcol = mob.col + sign(player.col - mob.col) #randint(1,3)-2
+      newrow = mob.row + sign(player.row - mob.row) #randint(1,3)-2
+      if world[newrow][newcol]==air and newrow>3 and newrow<height-3 and newcol>3 and newcol<width-3:
         mob.row=newrow
         mob.col=newcol
 
