@@ -290,7 +290,7 @@ def cave(row,col,age):
 # Simlified world init
 
 def witest():
-    global nblockswidth, nblocksheight, blockheight, blockwidth, world, gl, screen, player
+    global blockwidth, blockheight, nblockswidth, nblocksheight, SCREENWIDTH, SCREENHEIGHT, world
     for row in range(0,nblocksheight):
         for col in range(0,nblockswidth):
             world[row][col]=air
@@ -311,14 +311,17 @@ def witest():
 
 # Displays a world
 def pwtest():
-    global nblocksheight, nblockswidth, world, gl, screen, player
+    global blockwidth, blockheight, nblockswidth, nblocksheight, SCREENWIDTH, SCREENHEIGHT, world
     # For reasons we don't completely understand this can't go to the full nblocksheight
     # Seems like curses can't display in either the bottom row
     for row in range(0,nblocksheight-1): 
         for col in range(0,nblockswidth):
-          block = Block(blockcolors[world[row][col]]) 
-          block.rect.x = row
-          block.rect.y = col
+          #print(row,col,world[row][col],blockcolors[world[row][col]], [row*blockwidth,blockwidth,col*blockheight,blockheight])
+          pygame.draw.rect(screen, blockcolors[world[row][col]], [row*blockwidth,blockwidth,col*blockheight,blockheight])
+    print('Done pwtest')
+    pygame.display.flip()
+
+pwtest()
 
 class perpetualTimer():
 
@@ -496,13 +499,13 @@ while carryOn:
         '''            
         all_sprites_list.update()
         
-        pwtest()
+        #pwtest()
 
         #Now let's draw all the sprites in one go. (For now we only have 1 sprite!)
         all_sprites_list.draw(screen)
         
         #Refresh Screen
-        pygame.display.flip()
+        #pygame.display.flip()
         
         #Number of frames per secong e.g. 60
         clock.tick(60)

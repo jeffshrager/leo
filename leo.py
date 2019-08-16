@@ -5,7 +5,7 @@
 #   Add mobs
 #  Day-night cycle
 #  Use pygame for textures
-#  water,lava,sand,glass,wood planks
+#  lava,sand,glass
 #  main menu, with 'new world' 'load world', and'options'
 # ability to save worlds
 # 'survival' mode(no flight, slower speed, health, limited resourses)
@@ -215,7 +215,7 @@ def fall():
       
 def do_per_keystroke_tasks():
   flow_water()
-
+  sand_fall()
 def flow_water():
   # Scan the whole world for water:
   for row in range(0,height):
@@ -239,10 +239,24 @@ def flow_water():
               else:
                 if world[row+1][col-1]==air:
                   flowto(row,col,row+1,col-1)
-
+def sand_fall():
+  # Scan the whole world for sand:
+  for row in range(0,height):
+    for col in range(3,width-3):
+      # When you find a water sand...
+      if world[row][col]==sand:
+        # Check below, and fall down if it's open
+        if world[row+1][col]==air:
+          fallto(row,col,row+1,col)
+       
 def flowto(rowfrom,colfrom,rowto,colto):
   screen.addch(rowto,colto,'=')
-  world[rowto][colto]=water
+  world[rowto][colto]=sand
+  screen.addch(rowfrom,colfrom,' ')
+  world[rowfrom][colfrom]=air
+def fallto(rowfrom,colfrom,rowto,colto):
+  screen.addch(rowto,colto,'^')
+  world[rowto][colto]=sand
   screen.addch(rowfrom,colfrom,' ')
   world[rowfrom][colfrom]=air
 
