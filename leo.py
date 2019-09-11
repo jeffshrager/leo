@@ -203,10 +203,10 @@ def print_world():
     screen.addch(player.row,player.col,'*')
     drawmobs()
 
-#def drawmobs():
-#    for mob in mobs:
-#      screen.addch(mob.row,mob.col,chars[mob.type])
-#    screen.addstr(1,1,str(randint(1,6)))
+def drawmobs():
+    for mob in mobs:
+      screen.addch(mob.row,mob.col,chars[mob.type])
+    screen.addstr(1,1,str(randint(1,6)))
 
 from threading import *
 
@@ -237,7 +237,7 @@ def fall():
 def do_per_keystroke_tasks():
   flow_water()
   sand_fall()
-#  mobaction()
+  mobaction()
   print_world()
 
 def flow_water():
