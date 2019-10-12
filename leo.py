@@ -127,13 +127,12 @@ def mcpy():
                      world[row][col]=diamond
     '''
     # adds lakes
-    for col in range(8,width-8):
-      for row in range(0,height):
-        if grass==world[row][col]:
-          if randint(1,80)==1:
-            for i in range(1,randint(1,30)):
-              world[randint(row-5,row+5)][randint(col-5,col+5)]=water
-              i=i+1
+    for col in range(15,width-15):
+      for row in range(15,height-15):
+        if randint(1,8)==1:
+          for i in range(1,randint(1,3)):
+            world[randint(row-10,row+10)][randint(col-10,col+10)]=water
+            i=i+1
     '''
         
     
@@ -144,14 +143,14 @@ def mcpy():
             player=ent(row-1,col,person)
             break
     # Mobs
- #   for i in range(1,10):
- #    col=randint(3,width-3)
- #     newmob = ent(height-2,col,randint(22,23))
- #     for row in range(height-2,2,-1):
- #       if air==world[row][col]:
- #         newmob.row=row
- #         mobs=mobs+[newmob]
- #         break
+    for i in range(1,10):
+      col=randint(3,width-3)
+      newmob = ent(height-2,col,randint(22,23))
+      for row in range(height-2,2,-1):
+        if air==world[row][col]:
+          newmob.row=row
+          mobs=mobs+[newmob]
+          break
     # See what we've got!
     print_world() 
 
@@ -203,10 +202,10 @@ def print_world():
     screen.addch(player.row,player.col,'*')
     drawmobs()
 
-#def drawmobs():
-#    for mob in mobs:
-#      screen.addch(mob.row,mob.col,chars[mob.type])
-#    screen.addstr(1,1,str(randint(1,6)))
+def drawmobs():
+    for mob in mobs:
+      screen.addch(mob.row,mob.col,chars[mob.type])
+    screen.addstr(1,1,str(randint(1,6)))
 
 from threading import *
 
@@ -237,7 +236,7 @@ def fall():
 def do_per_keystroke_tasks():
   flow_water()
   sand_fall()
-#  mobaction()
+  mobaction()
   print_world()
 
 def flow_water():
@@ -257,12 +256,18 @@ def flow_water():
               else:
                 if world[row+1][col+1]==air:
                   fallto(row,col,row+1,col+1,water)
+                else:
+                  if world[row][col+1]==air:
+                    fallto(row,col,row,col+1,water)
             else:
               if world[row+1][col+1]==air:
                 fallto(row,col,row+1,col+1,water)
               else:
                 if world[row+1][col-1]==air:
                   fallto(row,col,row+1,col-1,water)
+                else:
+                  if world[row][col-1]==air:
+                    fallto(row,col,row,col-1,water)
 
 def sand_fall():
   # Scan the whole world for sand:
@@ -275,13 +280,13 @@ def sand_fall():
           fallto(row,col,row+1,col,sand)
 
 
-#def mobaction():
-#    for mob in mobs:
-#      newcol = mob.col + sign(player.col - mob.col) #randint(1,3)-2
-#      newrow = mob.row + sign(player.row - mob.row) #randint(1,3)-2
-#      if world[newrow][newcol]==air and newrow>3 and newrow<height-3 and newcol>3 and newcol<width-3:
-#        mob.row=newrow
-#        mob.col=newcol
+def mobaction():
+    for mob in mobs:
+      newcol = mob.col + sign(player.col - mob.col) #randint(1,3)-2
+      newrow = mob.row + sign(player.row - mob.row) #randint(1,3)-2
+      if world[newrow][newcol]==air and newrow>3 and newrow<height-3 and newcol>3 and newcol<width-3 and not world[newrow-1][newcol]==air:
+        mob.row=newrow
+        mob.col=newcol
 
 def fallto(rowfrom,colfrom,rowto,colto,block):
   screen.addch(rowto,colto,chars[block])
@@ -315,15 +320,15 @@ def mcpy_curses():
         if v==ord('n'):
             screen.refresh()
             mcpy()
-#        if v==ord('m'):
-#          if survival:
-#            survival = False
-#            t.cancel()
-#            screen.addch(0, width-1,'C')
-#          else:
-#            survival=True
-#            t.start()
-#            screen.addch(0, width-1,'S')
+        if v==ord('m'):
+          if survival:
+            survival = False
+            t.cancel()
+            screen.addch(0, width-1,'C')
+          else:
+            survival=True
+            t.start()
+            screen.addch(0, width-1,'S')
         if v==ord('w'):
           moveplayer(player.row-1,player.col)
         if v==ord('a'):
