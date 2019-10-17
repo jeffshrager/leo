@@ -29,6 +29,27 @@ class ent:
     self.health = 20
     self.type = type
 
+class biome:
+  def __init__(self, type, rar, treed, treet, hills, caved, groundt, deepgroundt, waterb, poolrar, cliffb, cliffrar, area):
+    self.type = type
+    self.treed = treed
+    self.treet = treet
+    self.hills = hills
+    self.caved = caved
+    self.groundt = groundt
+    self.deepgroundt = deepgroundt
+    self.waterb = waterb
+    self.poolrar = poolrar
+    self.cliffb = cliffb
+    self.cliffrar = cliffrar
+    self.area = area
+    self.rar = rar
+
+sparse_forest=biome('Sparse forest', 0.15, 30, 'oak', 4, range(4,7), 'grass', 'dirt', False, 0.06, True, 0.04, 5 )
+dense_forest=biome('Dense forest', 0.15, 2, 'oak', 4, range(4,7), 'grass', 'dirt', False, 0.06, True, 0.04, 5 )
+
+biomes=[sparse_forest,dense_forest]
+
 survival=False
 mobs=[]
 chars=" -~!@#$%^&*()_+=     *ZC"
@@ -54,8 +75,11 @@ person=20
 zombie=21
 creeper=22
 
+global thebiome
+
 def mcpy():
-    global height, width, world, gl, screen, player, survival, mobs
+    global height, width, world, gl, screen, player, survival, mobs, thebiome
+    thebiome=biomes[randint(0,len(biomes)-1)]
     mobs=[]
     # Initialize the whole world to air (0)
     # *** NESTED (2) ITERATOR PATTERN ***
@@ -108,7 +132,7 @@ def mcpy():
     for col in range(3,width-3):
         for row in range(0,height):
             if grass==world[row][col]:
-                if randint(0,randint(1,11))==0 and c<0: 
+                if randint(0,randint(1,thebiome.treed))==0 and c<0: 
                     tree(row,col)
                     c=4
                 else:
@@ -192,20 +216,19 @@ def cave(row,col,age):
 
 # Displays a world
 def print_world():
-    global height, width, world, gl, screen, player, survival, mobs
+    global height, width, world, gl, screen, player, survival, mobs, thebiome
     # For reasons we don't completely understand this can't go to the full height
     # Seems like curses can't display in either the bottom row
     for row in range(0,height-1): 
         for col in range(0,width):
             screen.addch(row,col,chars[world[row][col]])
-    screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01")
+    screen.addstr(0, 0, "Pycraft Alpha 1.4.0_01:"+thebiome.type)
     screen.addch(player.row,player.col,'*')
     drawmobs()
 
 def drawmobs():
     for mob in mobs:
       screen.addch(mob.row,mob.col,chars[mob.type])
-    screen.addstr(1,1,str(randint(1,6)))
 
 from threading import *
 
@@ -303,6 +326,8 @@ def mcpy_curses():
     screen.keypad(1) 
     curses.mousemask(1)
     curses.noecho()
+    screen.refresh()
+    #curses.start_color()
     height, width = screen.getmaxyx()
     world=ndarray(shape=(height,width), dtype=integer)
     # Calculate center row
