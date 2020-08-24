@@ -51,8 +51,7 @@ class Player(pygame.sprite.Sprite):
         # This could also be an image loaded from the disk.
         width = 40
         height = 60
-        self.image = pygame.Surface([width, height])
-        self.image.fill(RED)
+        self.image = pygame.image.load('test.png')
  
         # Set a referance to the image rect.
         self.rect = self.image.get_rect()
