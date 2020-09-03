@@ -8,9 +8,10 @@
 (defparameter *depth-limit* 4)
 (defvar *value->expr* (make-hash-table :test #'equal))
 (defvar *expr->value* (make-hash-table :test #'equal))
+(defparameter *max-10-power* 7)
 
 (defun run ()
-  (loop for target from 20 to 25
+  (loop for target in '(28 35 39 53 57 61 67 68 71 75 77 85 91 95 98 99) ; from 0 to 100
 	do (find-expr target)))
 
 (defun run24 ()
@@ -25,7 +26,7 @@
 
 (defun find-expr (target)
   ;;(format t "~% ======= ~a~%" target)
-  (loop as power from 3 to 7 by 1
+  (loop as power from 3 to *max-10-power*
 	as ntries = (expt 10 power)
 	as (shortest . minlength) = (find-expr-in-n-tries target ntries)
 	until shortest
@@ -74,6 +75,8 @@
 		 (an-expr (1- depth-limit))
 		 (an-expr (1- depth-limit))))))
 
+(run24)
+
 #|
 
 (defun exprs (d)
@@ -109,5 +112,3 @@
 				    (gethash v *value->expr*) x)))))))
 			  
 |#
-(run24)
-
