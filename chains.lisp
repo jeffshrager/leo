@@ -1,4 +1,4 @@
-;; (load (compile-file "primfns.lisp"))
+;; (load (compile-file "chains.lisp"))
 ;; dot -Tpdf chains.dot -o chains.pdf
 (defun factor (n)
   (too-big-break? n)
