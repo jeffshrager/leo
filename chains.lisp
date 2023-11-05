@@ -94,7 +94,7 @@
 
 (defvar *from->to* (make-hash-table :test #'equal))
 (defvar *loops* (make-hash-table :test #'equal))
-(defvar *delta->stacks* (make-hash-table :test #'equal))
+(defvar *d.b->stacks* (make-hash-table :test #'equal))
 
 (defun run-chain (fn n &key (trace? nil) &aux chain low high)
   (when trace? (format t "~%--- Running chain for ~a: " n))
@@ -136,39 +136,40 @@
 (defun stack? (l)
   (loop for potential-stack on l
 	until (< (length potential-stack) 3) ;; Don't check stacks of 2!
-	as d/l = (stack2? potential-stack) ;; Get the initial delta, if this actually is a stack.
-	if d/l ;; And if so, return it.
-	do (return d/l)
+	as d.b/l = (stack2? potential-stack) ;; Get the initial delta, if this actually is a stack.
+	if d.b/l ;; And if so, return it.
+	do (return d.b/l)
 	finally (return nil) ;; Finally, if there aren't any stacks, return nil.
 	))
 
 (defun stack2? (l)
   (let ((d (- (second l) (first l)))) ;; Set the delta between first two
-    (loop for e from 0 by 1 ;; This will be our exponent
-	  as (a b) on l ;; The too-short case should be blocked by our caller
-	  until (null b)
-	  if (not (= (- b a) (* d (expt 2 e))))
-	  do (return nil)
-	  finally (return (list d l))
-	  )))
+    (car (delete nil ;; There can only be one stack base, if any
+		 (loop for base from 2 to 10
+		       collect (loop for exponent from 0 by 1
+				     as (a b) on l ;; The too-short case should be blocked by our caller
+				     until (null b)
+				     if (not (= (- b a) (* d (expt base exponent))))
+				     do (return nil)
+				     finally (return (list (cons d base) l))))))))
 
 (defun run-chains (fn name &key (start 3) (end 100) (step 2) (trace? nil) &aux (report-every (/ end 20)))
   ;; Trace can be t, nil, or :full. In :full it prints out all the chains!
   (when trace? (setf end 100))
   (clrhash *from->to*)
   (clrhash *loops*)
-  (clrhash *delta->stacks*)
+  (clrhash *d.b->stacks*)
   (loop for n from start to end by step
 	do
 	(when (and (not trace?) (zerop (mod n report-every)) (print n)))
 	(loop for (to from) on (let ((chain (run-chain fn n :trace? trace?)))
 				 (unless (eq :too-big-to-prime-test chain)
-				   (let ((d/l (stack? chain)))
-				     (when d/l
-				       (let ((d (first d/l))
-					     (l (second d/l)))
-					 (push l (gethash d *delta->stacks*))
-					 (when trace? (format t "** Stack: ~a (delta = ~a)~%" l d)))))
+				   (let ((d.b/l (stack? chain)))
+				     (when d.b/l
+				       (let ((d.b (first d.b/l))
+					     (l (second d.b/l)))
+					 (push l (gethash d.b *d.b->stacks*))
+					 (when trace? (format t "** Stack: ~a (delta.base = ~a)~%" l d.b)))))
 				   chain))
 	      until (null from)
 	      do (setf (gethash from *from->to*) to)))
@@ -192,16 +193,16 @@
 	      (t (format t "  ~a chains land at ~a from: ~{~a~^, ~}~%" (length chains) base (mapcar #'(lambda (c) (car (last c))) chains)))
 	      ))
   (format t "~%Stacks for ~a:~%" name)
-  (loop for delta being the hash-keys of *delta->stacks*
+  (loop for d.b being the hash-keys of *d.b->stacks*
 	using (hash-value stacks)
 	do
 	(cond ((null trace?)
-	       (format t "  ~a stacks have delta=~a:   ~a~%" (length stacks) delta
+	       (format t "  ~a stacks have d.b=~a:   ~a~%" (length stacks) d.b
 		       (maximal-supersets stacks)))
 	      ((eq :full trace?)
-	       (format t "  ~a stacks have delta=~a:   ~a~%" (length stacks) delta stacks))
-	      (t (format t "  ~a stacks have delta=~a from: ~{~a~^, ~}~%"
-			 (length stacks) delta (mapcar #'(lambda (c) (car (last c))) stacks)))
+	       (format t "  ~a stacks have d.b=~a:   ~a~%" (length stacks) d.b stacks))
+	      (t (format t "  ~a stacks have d.b=~a from: ~{~a~^, ~}~%"
+			 (length stacks) d.b (mapcar #'(lambda (c) (car (last c))) stacks)))
 	      ))
 	)
 
@@ -225,4 +226,4 @@
 ;(trace run-chain stack? stack2?)
 ;(run-chains #'(lambda (low high) (- (* 2 high) low)) "2h-l" :end 1000 :trace? nil)
 ;(run-chains #'(lambda (low high) (+ (* 2 high) low)) "2h+l" :end 1000 :step 2 :trace? :full)
-(run-chains #'(lambda (low high) (+ (* 2 low) high)) "2l+h" :end 2000 :step 1 :trace? nil)
+(run-chains #'(lambda (low high) (+ (* 2 low) high)) "2l+h" :end 20000 :step 1 :trace? nil)
