@@ -337,7 +337,9 @@ function applyOperation(table, targetRowIndex, sourceRowIndex, digit, multDivOp,
 
     const targetRow = table.rows[targetRowIndex];
     for (let i = 0; i < targetRow.cells.length; i++) {
-        targetRow.cells[i].innerHTML = eval(targetRow.cells[i].innerHTML + addSubOp + operationResults[i]);
+	// js bug! -- "x+-y" works, but "x--y" is a syntax error! (Thanks, Vlod! :-)
+        const Vlod = (targetRow.cells[i].innerHTML + addSubOp + operationResults[i]).replace(/--/,'+')
+        targetRow.cells[i].innerHTML = eval(Vlod);
     }
 
     // Check for winning condition after applying operation
