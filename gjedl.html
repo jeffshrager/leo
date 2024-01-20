@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 10px;
+            background-color: lightblue;
+            margin: 20px;
+        }
+
+        .number-cell {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid black; /* Boxed number cells */
+            background-color: white; /* White background for number cells */
+        }
+
+        select, button {
+            padding: 5px;
+            margin: 2px;
+        }
+
+        .digit-select, .mult-div-select, .add-sub-select, .apply-btn {
+            background-color: #ed8cdd;
+        }
+
+        .digit-select {
+            background-color: #adebad;
+        }
+
+        .mult-div-select {
+            background-color: #ffcccb;
+        }
+
+        .add-sub-select {
+            background-color: #ffff99;
+        }
+
+        .apply-btn {
+            background-color: #ed8cdd;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+  <center><h3>GJEDL</h3>
+  (see instructions below)</center>
+    <table id="numberTable">
+        <!-- Dynamically generated table rows and cells -->
+    </table>
+    <button id="resetButton">Reset</button>
+    <button id="undoButton">Undo</button>
+    <hr>
+    <h4>
+
+GJEDL is played on a 5x5 grid of whole numbers (integers). (You'll notice that there is a 6th column in the table. Ignore that
+for now -- it's explained later -- just consider the left 5 columns over the 5 rows.) Your goal is to end up with this pattern:
+
+</p><p>
+<pre>
+
+1 0 0 0 0
+0 1 0 0 0
+0 0 1 0 0
+0 0 0 1 0
+0 0 0 0 1
+
+</pre>
+</p><p>
+You get there by manipulating the matrix in accord with one of the following operations:
+</p><p>
+1. Swap any two rows.
+</p><p> 2. Multiply any row by a number between 1 and 9, and then add
+or subtract it into another row. (Technically you can also divide,
+but you end up with decimals, so for the moment, until you're an expert, I recommend sticking to multiplication, so just leave the yellow selector at "*".)
+</p><p>
+The first (green) selector says which row you're going to swap with or
+add/subtract into the current row. If all you're doing is a swap, you
+just select the row that you want to swap with, and click the [Swap]
+button.
+</p><p>
+If you're going to add/subtract another row into this one, you select
+the "source" row (the current one being the "target"), and then the
+number by which entries in the source will be multiplied, and whether
+you want that result added or subtracted into the current one, and
+then click "Apply". The math is done column-by-column, there's no
+interaction between the columns.
+</p><p>
+For example, suppose you have this matrix:
+</p>
+<pre>
+
+ 1  2  3  4  5
+ 6  7  8  9 10
+-1 -3 -5 -7 -9
+ 1 -2  3 -4  5
+ 6  7 -8 -9 10
+
+</pre> </p><p> You might choose to multiply row 1 by 2 and then
+subtract it from (into) row 2. Here row 1 is the source row, and row 2
+is the target row. You would do all the selections and clicking on row 2! 
+</p><p>
+The result of this would be: </p><p> <pre>
+
+ 1  2  3  4  5
+ 4  3  2  1  0
+-1 -3 -5 -7 -9
+ 1 -2  3 -4  5
+ 6  7 -8 -9 10
+
+</pre>
+</p><p>
+Notice that the only row that changes is row 2!
+</p><p>
+The goal is to get to the "goal" matrix (1s along the main diagonal
+and 0s everywhere else) in the minimum number of operations.
+</p><p>
+  <hr>
+
+  Okay, so what's the extra column of numbers about?! What you're
+  actually doing is called "Gauss-Jordan Elimination", which is a
+  mathematical technique used to solve systems of linear
+  equations. The numbers that you're left with in the righthand
+  column, once you have solved the main part of the matrix, as above,
+  are the solutions to the linear equations expressed by the values in
+  the original matrix. You can read more about this important
+  technique here: <a target=_blank href=https://en.wikipedia.org/wiki/Gaussian_elimination>[Gaussian elimination wikipedia article]</a>.
+
+</p>
+
+</h4>
+<hr>
+<h4>(Below is a history of the operations done to make the table to begin with. You can cheat by undoing these in order. Note that if the operation was an addition, you need to do a subtraction to undo it!</h4>
+<p></p>
+    <pre id="hints"></pre>
+    <hr>
+</body>
+<script>
+
+const N = 5;
+let history = [];
+let previousState = null;
+let rss = rowSelectionSequence();
+let computedStartState = creatematrix()
+let preElement = document.getElementById("hints");
+preElement.textContent = history.reverse();
+
+document.addEventListener('DOMContentLoaded', function () {
+    const table = document.getElementById('numberTable');
+    const totalRows = 5; // Total number of rows in the table
+    const totalColumns = 6; // Total number of columns for numbers
+    
+    // Generating the table with initial values
+    for (let i = 0; i < totalRows; i++) {
+        const row = table.insertRow();
+        for (let j = 0; j < totalColumns; j++) {
+            let cell = row.insertCell();
+            cell.className = 'number-cell'; // Assign class for styling number cells
+            cell.innerHTML = Math.floor(Math.random() * 10); // Or any initial value
+        }
+        addControls(table, i, totalRows);
+    }
+    
+    // If there was a start state computed by the Lisp code, use it.
+    if (computedStartState) {
+	loadTableState(table, computedStartState);
+    }
+    
+    // Store initial state
+    const initialState = saveTableState(table);
+    
+    // Reset Button
+    document.getElementById('resetButton').addEventListener('click', function() {
+        loadTableState(table, initialState);
+        previousState = null; // Clear previous state after reset
+    });
+    
+    // Undo Button
+    document.getElementById('undoButton').addEventListener('click', function() {
+        if (previousState) {
+            loadTableState(table, previousState);
+            previousState = null; // Clear previous state after undo
+        }
+    });
+});
+
+// Function to save the current state of the table
+function saveTableState(table) {
+    let state = [];
+    for (let row of table.rows) {
+        let rowData = [];
+        for (let cell of row.cells) {
+            rowData.push(cell.innerHTML);
+        }
+        state.push(rowData);
+    }
+    return state;
+}
+
+// Function to load a saved state into the table
+function loadTableState(table, state) {
+    for (let i = 0; i < table.rows.length; i++) {
+        for (let j = 0; j < table.rows[i].cells.length; j++) {
+            table.rows[i].cells[j].innerHTML = state[i][j];
+        }
+    }
+}
+
+function addControls(table, rowIndex, totalRows) {
+    const sourceRowSelect = createRowSelect(totalRows);
+    sourceRowSelect.className = 'digit-select';
+
+    const digitSelect = createDigitSelect();
+    digitSelect.className = 'mult-div-select';
+
+    const multDivSelect = createOperationSelect(['*', '/', 'null']);
+    multDivSelect.className = 'add-sub-select';
+
+    const addSubSelect = createOperationSelect(['+', '-', 'null']);
+    addSubSelect.className = 'apply-btn';
+
+    const applyButton = document.createElement('button');
+    applyButton.textContent = 'Apply';
+    applyButton.className = 'apply-btn';
+    applyButton.onclick = () => applyOperation(table, rowIndex, sourceRowSelect.value, digitSelect.value, multDivSelect.value, addSubSelect.value);
+
+    const swapButton = document.createElement('button');
+    swapButton.textContent = 'Swap';
+    swapButton.className = 'swap-btn'; // Assign class for styling
+    swapButton.onclick = () => swapRows(table, rowIndex, sourceRowSelect.value);
+
+    const row = table.rows[rowIndex];
+    row.appendChild(sourceRowSelect);
+    row.appendChild(digitSelect);
+    row.appendChild(multDivSelect);
+    row.appendChild(addSubSelect);
+    row.appendChild(applyButton);
+    row.appendChild(swapButton);
+}
+
+function swapRows(table, rowIndex1, rowIndex2) {
+    if (rowIndex2 === 'null') {
+        return; // Do nothing if 'null' is selected
+    }
+
+    let row1 = table.rows[rowIndex1];
+    let row2 = table.rows[rowIndex2];
+
+    for (let i = 0; i < row1.cells.length; i++) {
+        // Swap cell values
+        [row1.cells[i].innerHTML, row2.cells[i].innerHTML] = [row2.cells[i].innerHTML, row1.cells[i].innerHTML];
+    }
+
+    // Store the previous state for undo
+    previousState = saveTableState(table);
+}
+
+function createRowSelect(totalRows) {
+    const select = document.createElement('select');
+    const nullOption = document.createElement('option');
+    nullOption.value = 'null';
+    nullOption.textContent = 'None';
+    select.appendChild(nullOption);
+
+    for (let i = 0; i < totalRows; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = 'Row ' + (i + 1);
+        select.appendChild(option);
+    }
+    return select;
+}
+
+function createDigitSelect() {
+    const select = document.createElement('select');
+    for (let i = 1; i <= 9; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        select.appendChild(option);
+    }
+    return select;
+}
+
+function createOperationSelect(operations) {
+    const select = document.createElement('select');
+    operations.forEach(op => {
+        const option = document.createElement('option');
+        option.value = op;
+        option.textContent = op;
+        select.appendChild(option);
+    });
+    return select;
+}
+
+function applyOperation(table, targetRowIndex, sourceRowIndex, digit, multDivOp, addSubOp) {
+    // Store the previous state for undo
+    previousState = saveTableState(table);
+    if (sourceRowIndex === 'null' || multDivOp === 'null' || addSubOp === 'null') {
+        return; // Do nothing if any operation is set to 'null'
+    }
+
+    const sourceRow = table.rows[sourceRowIndex];
+    let operationResults = [];
+    for (let i = 0; i < sourceRow.cells.length; i++) {
+        let cellValue = parseFloat(sourceRow.cells[i].innerHTML);
+        let operationResult = eval(cellValue + multDivOp + digit);
+        operationResults.push(operationResult);
+    }
+
+    const targetRow = table.rows[targetRowIndex];
+    for (let i = 0; i < targetRow.cells.length; i++) {
+        targetRow.cells[i].innerHTML = eval(targetRow.cells[i].innerHTML + addSubOp + operationResults[i]);
+    }
+
+    // Check for winning condition after applying operation
+    if (checkForWin(table)) {
+        // Display colorful alert for winning
+        alertWin();
+    }
+}
+
+function checkForWin(table) {
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 5; j++) {
+            let cellValue = parseInt(table.rows[i].cells[j].innerHTML, 10);
+            if (i === j) {
+                // Check diagonal elements are 1
+                if (cellValue !== 1) return false;
+            } else {
+                // Check non-diagonal elements are 0
+                if (cellValue !== 0) return false;
+            }
+        }
+    }
+    return true; // Winning condition met
+}
+
+function alertWin() {
+    const winMessage = "YOU WON!";
+    const winStyle = "color: red; font-size: 30px; font-weight: bold; text-shadow: 1px 1px yellow";
+    console.log('%c' + winMessage, winStyle); // Colorful message in console
+    alert(winMessage); // Regular alert as well
+}
+
+function randomRowAndTarget(n = N) {
+  let row = [];
+  for (let i = 0; i <= n; i++) {
+    row.push(Math.floor(Math.random() * 10));
+  }
+  return row;
+}
+
+function initMatrix(n = N) {
+  let matrix = [];
+  for (let i = 0; i < n; i++) {
+    matrix.push(randomRowAndTarget(n));
+  }
+  return matrix;
+}
+
+function randomPermute(sequence) {
+  let copy = sequence.slice();
+  for (let i = copy.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function rowSelectionSequence(n = N) {
+  let set = Array.from({ length: n }, (_, i) => i);
+  let sequence = [];
+  for (let i = 0; i < 50; i++) {
+    sequence = sequence.concat(randomPermute(set));
+  }
+  return sequence;
+}
+
+function operate(matrix) {
+    let n = matrix.length;
+    let operationType = Math.random() < 0.5 ? 'swap' : 'addSubtract';
+    let row1 = rss.pop()
+    let row2 = rss.pop();
+    do {row2 = rss.pop()} while (row2 === row1); 
+    if (operationType === 'swap') {
+	history.push("swap "+(1+row1).toString()+" with "+(1+row2).toString()+"\n")
+        // This wasn't working so I did it the "hard" way:
+        // [matrix[row1], matrix[row2]] = [matrix[row2], matrix[row1]];
+        temp = [...matrix[row2]]
+        matrix[row2]=[...matrix[row1]]
+        matrix[row1]=temp
+    } else {
+        // Add or subtract after multiplication
+        let multiplyFactor = 1 + Math.floor(Math.random() * 5);
+        let addOrSubtract = Math.random() < 0.5 ? (a, b) => a + b : (a, b) => a - b;
+	history.push("Multply row "+(1+row1).toString()+" by "+multiplyFactor.toString()+" and "+
+		     "["+addOrSubtract.toString()+"] it to row: "+(1+row2).toString()+"\n")
+        for (let i = 0; i < matrix[row1].length; i++) {
+            matrix[row2][i] = addOrSubtract(matrix[row2][i], matrix[row1][i] * multiplyFactor);
+        }
+    }
+    return matrix;
+}
+
+function deepCopy(matrix) {
+    let copy = [];
+    for (let row of matrix) {
+        copy.push(row.slice()); // .slice() creates a shallow copy of the row
+    }
+    return copy;
+}
+function creatematrix() {
+    history = [];
+    let matrix = initMatrix();
+    // Setting diagonal to 1
+    for (let i = 0; i < N; i++) {
+        matrix[i] = new Array(N).fill(0).concat(Math.floor(Math.random() * 10));
+        matrix[i][i] = 1;
+    }
+
+    let numOfOperations = 3 + Math.floor(Math.random() * 10);
+    for (let i = 0; i < numOfOperations; i++) {
+        matrix = operate(matrix);
+    }
+
+    return matrix;
+}
+
+</script>
+</html>
+
+
