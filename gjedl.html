@@ -7,6 +7,13 @@
             font-family: Arial, sans-serif;
         }
 
+	#winMessage {
+            display: none;
+            font-size: 2em;
+            color: purple;
+            text-align: center;
+        }
+
         table {
             border-collapse: separate;
             border-spacing: 10px;
@@ -49,16 +56,20 @@
     </style>
 </head>
 <body>
-  <center><h3>GJEDL</h3>
-  (c) Copyright 2024 Jeff Shrager and Leo Armel<br>(see instructions and cheats below)</center>
+  <center><h2>GJEDL - A MATH GAME</h2>
+  (c) Copyright 2024 Jeff Shrager and Leo Armel<br>
+    <br>
+    <div id="winMessage"><h1>YOU WON!</h1></div>
     <table id="numberTable">
         <!-- Dynamically generated table rows and cells -->
     </table>
     <button id="resetButton">Reset</button>
     <button id="undoButton">Undo</button>
+    <br><br>(instructions and solution below)
+  </center>
     <hr>
     <h4>
-
+<h3>Instructions</h3>
 GJEDL is played on a 5x5 grid of whole numbers (integers). (You'll notice that there is a 6th column in the table. Ignore that
 for now -- it's explained later -- just consider the left 5 columns over the 5 rows.) Your goal is to end up with this pattern:
 
@@ -120,9 +131,10 @@ Notice that the only row that changes is row 2!
 </p><p>
 The goal is to get to the "goal" matrix (1s along the main diagonal
 and 0s everywhere else) in the minimum number of operations.
-</p><p>
+</p>
   <hr>
-
+<h3>GJEDL Explained:</h3>
+<p>
   Okay, so what's the extra column of numbers about?! What you're
   actually doing is called "Gauss-Jordan Elimination", which is a
   mathematical technique used to solve systems of linear
@@ -136,7 +148,7 @@ and 0s everywhere else) in the minimum number of operations.
 
 </h4>
 <hr>
-<h4>(Below is a history of the operations done to make the table to begin with. You can cheat by undoing these in order. Note that if the operation was an addition, you need to do a subtraction to undo it!</h4>
+<h4><h3>Solution (aka Cheating):</h3>This is a history of the operations done to make the table to begin with. You can cheat by undoing these in order.  <p>(If this is too long for you, you can get a new one by just refreshing this page over and over until the cheat is reasonably short.)</p></h4>
 <p></p>
     <pre id="hints"></pre>
     <hr>
@@ -179,6 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('resetButton').addEventListener('click', function() {
         loadTableState(table, initialState);
         previousState = null; // Clear previous state after reset
+       document.getElementById("winMessage").style.display = "none"; // hide win message
     });
     
     // Undo Button
@@ -228,7 +241,8 @@ function addControls(table, rowIndex, totalRows) {
     const applyButton = document.createElement('button');
     applyButton.textContent = 'Apply';
     applyButton.className = 'apply-btn';
-    applyButton.onclick = () => applyOperation(table, rowIndex, sourceRowSelect.value, digitSelect.value, multDivSelect.value, addSubSelect.value);
+    applyButton.onclick = () => applyOperation(table, rowIndex, sourceRowSelect.value,
+					       digitSelect.value, multDivSelect.value, addSubSelect.value);
 
     const swapButton = document.createElement('button');
     swapButton.textContent = 'Swap';
@@ -249,6 +263,9 @@ function swapRows(table, rowIndex1, rowIndex2) {
         return; // Do nothing if 'null' is selected
     }
 
+    // Store the previous state for undo
+    previousState = saveTableState(table);
+
     let row1 = table.rows[rowIndex1];
     let row2 = table.rows[rowIndex2];
 
@@ -257,8 +274,12 @@ function swapRows(table, rowIndex1, rowIndex2) {
         [row1.cells[i].innerHTML, row2.cells[i].innerHTML] = [row2.cells[i].innerHTML, row1.cells[i].innerHTML];
     }
 
-    // Store the previous state for undo
-    previousState = saveTableState(table);
+    // Check for winning condition after applying operation
+    if (checkForWin(table)) {
+        // Display colorful alert for winning
+        alertWin();
+    }
+
 }
 
 function createRowSelect(totalRows) {
@@ -343,10 +364,8 @@ function checkForWin(table) {
 }
 
 function alertWin() {
-    const winMessage = "YOU WON!";
-    const winStyle = "color: red; font-size: 30px; font-weight: bold; text-shadow: 1px 1px yellow";
-    console.log('%c' + winMessage, winStyle); // Colorful message in console
-    alert(winMessage); // Regular alert as well
+    //document.getElementById("numberTable").style.display = "none"; // Hide the table
+     document.getElementById("winMessage").style.display = "block"; // Show the win message
 }
 
 function randomRowAndTarget(n = N) {
@@ -399,9 +418,13 @@ function operate(matrix) {
     } else {
         // Add or subtract after multiplication
         let multiplyFactor = 1 + Math.floor(Math.random() * 5);
-        let addOrSubtract = Math.random() < 0.5 ? (a, b) => a + b : (a, b) => a - b;
+	let addOrSubtractVal = Math.random()
+        let addOrSubtract = addOrSubtractVal < 0.5 ? (a, b) => a + b : (a, b) => a - b;
+        // Note that these are BACKWARDS from the direction of the operation because
+	// the used will need to do the OPPOSITE op to undo these
+        let addOrSubtractText = addOrSubtractVal < 0.5 ? "substact it from" : "add it to" ;
 	history.push("Multply row "+(1+row1).toString()+" by "+multiplyFactor.toString()+" and "+
-		     "["+addOrSubtract.toString()+"] it to row: "+(1+row2).toString()+"\n")
+		     addOrSubtractText+" row "+(1+row2).toString()+"\n")
         for (let i = 0; i < matrix[row1].length; i++) {
             matrix[row2][i] = addOrSubtract(matrix[row2][i], matrix[row1][i] * multiplyFactor);
         }
