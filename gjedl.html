@@ -406,7 +406,7 @@ function rowSelectionSequence(n = N) {
 
 function operate(matrix) {
     let n = matrix.length;
-    let operationType = Math.random() < 0.5 ? 'swap' : 'addSubtract';
+    let operationType = Math.random() < 0.25 ? 'swap' : 'addSubtract';
     let row1 = rss.pop()
     let row2 = rss.pop();
     do {row2 = rss.pop()} while (row2 === row1); 
@@ -414,24 +414,55 @@ function operate(matrix) {
 	history.push("swap "+(1+row1).toString()+" with "+(1+row2).toString()+"\n")
         // This wasn't working so I did it the "hard" way:
         // [matrix[row1], matrix[row2]] = [matrix[row2], matrix[row1]];
-        temp = [...matrix[row2]]
-        matrix[row2]=[...matrix[row1]]
-        matrix[row1]=temp
+        temp = [...matrix[row2]];
+        matrix[row2]=[...matrix[row1]];
+        matrix[row1]=temp;
     } else {
-        // Add or subtract after multiplication
-        let multiplyFactor = 1 + Math.floor(Math.random() * 5);
-	let addOrSubtractVal = Math.random()
+        // Add or subtract after multiplication or division
+	// Division only allowed if each element can be divided evenly, but it turns out that
+        // divisibility basically never happens, so all this code for division is sort of a waste.
+	let divisor = evenDivisor(matrix[row1]);
+	if (divisor) {
+	    multiplyFactor = 1/divisor;
+	} else {
+	    multiplyFactor = 1 + Math.floor(Math.random() * 6);
+	}
+	let addOrSubtractVal = Math.random();
         let addOrSubtract = addOrSubtractVal < 0.5 ? (a, b) => a + b : (a, b) => a - b;
+	// Do the actual work!
+        for (let i = 0; i < matrix[row1].length; i++) {
+            matrix[row2][i] = addOrSubtract(matrix[row2][i], matrix[row1][i] * multiplyFactor);
+	}
+	// Ugly hacks make the history look right:
         // Note that these are BACKWARDS from the direction of the operation because
 	// the used will need to do the OPPOSITE op to undo these
         let addOrSubtractText = addOrSubtractVal < 0.5 ? "substact it from" : "add it to" ;
-	history.push("Multply row "+(1+row1).toString()+" by "+multiplyFactor.toString()+" and "+
+	let mstring = "Multply"
+	if (multiplyFactor < 1.0) { 
+	    let mstring = "Divide";
+	    let multiplyFactor = Math.floor(1/multiplyFactor);
+	}
+	history.push(mstring + " row "+(1+row1).toString()+" by "+multiplyFactor.toString()+" and "+
 		     addOrSubtractText+" row "+(1+row2).toString()+"\n")
-        for (let i = 0; i < matrix[row1].length; i++) {
-            matrix[row2][i] = addOrSubtract(matrix[row2][i], matrix[row1][i] * multiplyFactor);
-        }
     }
     return matrix;
+}
+
+// Tests for various even divisors in random order. Turns out that
+// divisibility basically never happens, so all this code for division is sort of a waste.
+
+function evenDivisor(row) {
+    for (let i = 0; i < 5; i++) {
+	let d = [2,3,4,5,10][Math.floor(Math.random()*5)]; // Pick one
+	let yes = true;
+	for (let elt of row) {
+	    if (Math.floor(elt/d) != elt/d) {
+		yes = false;
+		break;
+	    }}
+	if (yes){return(d);}
+    }
+    return false;
 }
 
 function deepCopy(matrix) {
@@ -450,7 +481,7 @@ function creatematrix() {
         matrix[i][i] = 1;
     }
 
-    let numOfOperations = 3 + Math.floor(Math.random() * 10);
+    let numOfOperations = 6 + Math.floor(Math.random() * 10);
     for (let i = 0; i < numOfOperations; i++) {
         matrix = operate(matrix);
     }
