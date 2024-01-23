@@ -59,11 +59,20 @@
   <center><h2>GJEDL - A MATH GAME</h2>
   (c) Copyright 2024 Jeff Shrager and Leo Armel<br>
     <br>
-    <div id="winMessage"><h1>YOU WON!</h1></div>
+    <h1><div id="winMessage">YOU WON!</div></h1>
+    <table>
+    <tr>
+    <td>
     <table id="numberTable">
         <!-- Dynamically generated table rows and cells -->
-    </table>
     <button id="resetButton">Reset</button>
+    </table>
+    </td>
+    <td>
+    <h1><div id="count">0</div></h1>
+    </td>
+    </tr>
+    </table>
     <button id="undoButton">Undo</button>
     <br><br>(instructions and solution below)
   </center>
@@ -156,6 +165,8 @@ and 0s everywhere else) in the minimum number of operations.
 <script>
 
 const N = 5;
+let count = 0;
+let initial_count = 0; // for reset
 let history = [];
 let previousState = null;
 let rss = rowSelectionSequence();
@@ -191,7 +202,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('resetButton').addEventListener('click', function() {
         loadTableState(table, initialState);
         previousState = null; // Clear previous state after reset
-       document.getElementById("winMessage").style.display = "none"; // hide win message
+        document.getElementById("winMessage").style.display = "none"; // hide win message
+	setcount(initial_count);
     });
     
     // Undo Button
@@ -199,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (previousState) {
             loadTableState(table, previousState);
             previousState = null; // Clear previous state after undo
+	    setcount(count+1);
         }
     });
 });
@@ -279,7 +292,7 @@ function swapRows(table, rowIndex1, rowIndex2) {
         // Display colorful alert for winning
         alertWin();
     }
-
+    setcount(count-1);
 }
 
 function createRowSelect(totalRows) {
@@ -347,6 +360,7 @@ function applyOperation(table, targetRowIndex, sourceRowIndex, digit, multDivOp,
         // Display colorful alert for winning
         alertWin();
     }
+    setcount(count-1);
 }
 
 function checkForWin(table) {
@@ -366,8 +380,9 @@ function checkForWin(table) {
 }
 
 function alertWin() {
-    //document.getElementById("numberTable").style.display = "none"; // Hide the table
-     document.getElementById("winMessage").style.display = "block"; // Show the win message
+    document.getElementById("winMessage").innerHTML="<h1>YOU WON!</h1>";
+    if (count<0){document.getElementById("winMessage").innerHTML="<h3>Nice work, but there's a faster route!</h3>"};
+    document.getElementById("winMessage").style.display = "block"; // Show the win message
 }
 
 function randomRowAndTarget(n = N) {
@@ -406,10 +421,21 @@ function rowSelectionSequence(n = N) {
 
 function operate(matrix) {
     let n = matrix.length;
-    let operationType = Math.random() < 0.25 ? 'swap' : 'addSubtract';
+    let operationType = Math.random() < 0.1 ? 'swap' : 'addSubtract';
     let row1 = rss.pop()
-    let row2 = rss.pop();
-    do {row2 = rss.pop()} while (row2 === row1); 
+    let row2 = false;
+    // Prefer to operate on a row that contains a 1. If none do, then use the pop stack.
+    let onerows = [];
+    for (let row = 0; row < N; row++){if (matrix[row].find((element) => element == 1)){onerows.push(row)}};
+    let lors = onerows.length;
+    //console.log(onerows);
+    //console.log(lors);
+    if (lors > 0){row2 = onerows[Math.floor(lors * Math.random())]}
+    //console.log(row2);
+    if (! row2) {let row2 = rss.pop()}
+    // Protect against using the same row.
+    do {row2 = rss.pop()} while (row2 === row1);
+    //console.log(row2);
     if (operationType === 'swap') {
 	history.push("swap "+(1+row1).toString()+" with "+(1+row2).toString()+"\n")
         // This wasn't working so I did it the "hard" way:
@@ -439,11 +465,11 @@ function operate(matrix) {
         let addOrSubtractText = addOrSubtractVal < 0.5 ? "substact it from" : "add it to" ;
 	let mstring = "Multply"
 	if (multiplyFactor < 1.0) { 
-	    let mstring = "Divide";
-	    let multiplyFactor = Math.floor(1/multiplyFactor);
+	    mstring = "Divide";
+	    multiplyFactor = Math.floor(1/multiplyFactor);
 	}
 	history.push(mstring + " row "+(1+row1).toString()+" by "+multiplyFactor.toString()+" and "+
-		     addOrSubtractText+" row "+(1+row2).toString()+"\n")
+		     addOrSubtractText+" row "+(1+row2).toString()+"\n");
     }
     return matrix;
 }
@@ -465,6 +491,11 @@ function evenDivisor(row) {
     return false;
 }
 
+function setcount(n){
+    count = n;
+    document.getElementById('count').innerHTML=count.toString()
+}
+
 function deepCopy(matrix) {
     let copy = [];
     for (let row of matrix) {
@@ -472,6 +503,7 @@ function deepCopy(matrix) {
     }
     return copy;
 }
+
 function creatematrix() {
     history = [];
     let matrix = initMatrix();
@@ -480,12 +512,12 @@ function creatematrix() {
         matrix[i] = new Array(N).fill(0).concat(Math.floor(Math.random() * 10));
         matrix[i][i] = 1;
     }
-
-    let numOfOperations = 6 + Math.floor(Math.random() * 10);
+    let numOfOperations = 4 + Math.floor(Math.random() * 10);
     for (let i = 0; i < numOfOperations; i++) {
         matrix = operate(matrix);
     }
-
+    setcount(numOfOperations);
+    initial_count=numOfOperations; // for reset
     return matrix;
 }
 
