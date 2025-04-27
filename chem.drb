@@ -1,0 +1,50 @@
+Solubility Rules by Type Ranked by Confidence:
+------------------------------------------------------------
+All NA compounds are soluble. (Confidence: 100.0%)
+All K compounds are soluble. (Confidence: 100.0%)
+All NH4 compounds are soluble, except [NH4 SO4]. (Confidence: 85.7%)
+All MG compounds are soluble, except [MG NO3], [MG PO4], [MG OH]. (Confidence: 70.0%)
+All SR compounds are soluble, except [SR PO4], [SR CO3], [SR C2O4]. (Confidence: 70.0%)
+All AL compounds are soluble, except [AL PO4], [AL OH], [AL CRO4]. (Confidence: 70.0%)
+All CA compounds are soluble, except [CA PO4], [CA OH], [CA CRO4]. (Confidence: 70.0%)
+All ZN compounds are soluble, except [ZN PO4], [ZN OH], [ZN CO3], [ZN CRO4]. (Confidence: 60.0%)
+All CR compounds are soluble, except [CR PO4], [CR OH], [CR BR], [CR CO3]. (Confidence: 55.6%)
+All BA compounds are soluble, except [BA PO4], [BA SO4], [BA C2O4], [BA CO3], [BA CRO4]. (Confidence: 50.0%)
+All SN compounds are soluble, except [SN PO4], [SN SO4], [SN C2H3O2], [SN CO3], [SN CRO4]. (Confidence: 50.0%)
+All PB compounds are soluble, except [PB I], [PB PO4], [PB OH], [PB CO3], [PB CRO4]. (Confidence: 50.0%)
+
+All FE compounds are insoluble, except [FE SO4]. (Confidence: 90.0%)
+All MN compounds are insoluble, except [MN SO4]. (Confidence: 90.0%)
+All AG compounds are insoluble, except [AG SO4], [AG C2H3O2]. (Confidence: 80.0%)
+All CO compounds are insoluble, except [CO BR], [CO NO3], [CO SO4]. (Confidence: 70.0%)
+All CU compounds are insoluble, except [CU SO4], [CU CRO4], [CU C2H3O2], [CU CL]. (Confidence: 60.0%)
+All NI compounds are insoluble, except [NI BR], [NI CRO4], [NI I], [NI SO4]. (Confidence: 60.0%)
+
+All SO4 salts are soluble, except [NH4 SO4], [BA SO4], [SN SO4]. (Confidence: 82.4%)
+All NO3 salts are soluble, except [MG NO3], [NI NO3]. (Confidence: 80.0%)
+All CL salts are soluble, except [AG CL], [FE CL], [MN CL]. (Confidence: 72.7%)
+All BR salts are soluble, except [AG BR], [CU BR], [FE BR], [MN BR], [CR BR]. (Confidence: 70.6%)
+All C2H3O2 salts are soluble, except [FE C2H3O2], [MN C2H3O2], [SN C2H3O2], [CO C2H3O2], [NI C2H3O2]. (Confidence: 70.6%)
+All I salts are soluble, except [AG I], [CU I], [FE I], [PB I], [MN I], [CO I]. (Confidence: 62.5%)
+All C2O4 salts are soluble, except [AG C2O4], [CU C2O4], [FE C2O4], [SR C2O4], [MN C2O4], [BA C2O4], [CO C2O4], [NI C2O4]. (Confidence: 52.9%)
+
+All PO4 salts are insoluble, except [NA PO4]. (Confidence: 93.8%)
+All CO3 salts are insoluble, except [NA CO3], [MG CO3], [AL CO3], [CA CO3]. (Confidence: 75.0%)
+All OH salts are insoluble, except [SN OH], [NH4 OH], [BA OH], [SR OH], [K OH]. (Confidence: 70.6%)
+All CRO4 salts are insoluble, except [CU CRO4], [CR CRO4], [NA CRO4], [NI CRO4], [MG CRO4], [SR CRO4]. (Confidence: 62.5%)
+
+Total rules generated: 29
+
+Example Solubility Predictions:
+------------------------------------------------------------
+[AG CL] → Insoluble (precipitate forms) (Direct observation, Confidence: 100.0%)
+[NA CL] → Soluble (Follows NA solubility rule, Confidence: 100.0%)
+[BA SO4] → Insoluble (precipitate forms) (Direct observation, Confidence: 100.0%)
+[PB I] → Insoluble (precipitate forms) (Direct observation, Confidence: 100.0%)
+[AL OH] → Insoluble (precipitate forms) (Direct observation, Confidence: 100.0%)
+[CA CO3] → Soluble (Direct observation, Confidence: 100.0%)
+[MG PO4] → Insoluble (precipitate forms) (Direct observation, Confidence: 100.0%)
+[NH4 OH] → Soluble (Direct observation, Confidence: 100.0%)
+[CU S] → Unknown (insufficient data) (No applicable rules found, Confidence: 0.0%)
+[K NO3] → Insoluble (precipitate forms) (Direct observation, Confidence: 79.2%)
+(leolife) jeffshrager@MacBook-Pro-5 repo % 

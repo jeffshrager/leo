@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Random Hensel Code Generator</title>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    input, button { font-size: 1em; margin: 0.2em; }
+    .section { border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; }
+    label { margin-right: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Random Hensel Code Generator</h1>
+
+  <!-- Global setting for Birth section only -->
+  <div>
+    <label>
+      <input type="checkbox" id="preventExplosivity">
+      Prevent Explosivity
+    </label>
+  </div>
+
+  <!-- Birth Section -->
+  <div class="section" id="birthSection">
+    <h2>Birth</h2>
+    <div>
+      <label for="birthMin">Min Codes:</label>
+      <input type="number" id="birthMin" min="1" max="51" value="3">
+      <label for="birthMax">Max Codes:</label>
+      <input type="number" id="birthMax" min="1" max="51" value="10">
+    </div>
+    <p id="birthResult" style="font-weight:bold;"></p>
+  </div>
+
+  <!-- Survival Section -->
+  <div class="section" id="survivalSection">
+    <h2>Survival</h2>
+    <div>
+      <label for="survivalMin">Min Codes:</label>
+      <input type="number" id="survivalMin" min="1" max="51" value="3">
+      <label for="survivalMax">Max Codes:</label>
+      <input type="number" id="survivalMax" min="1" max="51" value="10">
+    </div>
+    <p id="survivalResult" style="font-weight:bold;"></p>
+  </div>
+
+  <button id="generateBtn">Generate</button>
+
+  <script>
+    // Full list of 51 codes.
+    const codes = [
+      "0x",
+      "1c","1e",
+      "2c","2e","2k","2a","2i","2n",
+      "3c","3e","3k","3a","3i","3n","3y","3q","3j","3r",
+      "4c","4e","4k","4a","4i","4n","4y","4q","4j","4r","4t","4w","4z",
+      "5c","5e","5k","5a","5i","5n","5y","5q","5j","5r",
+      "6c","6e","6k","6a","6i","6n",
+      "7c","7e",
+      "8x"
+    ];
+
+    // Banned codes for Birth when "Prevent Explosivity" is checked.
+    function isBanned(code) {
+      return (code[0] === "0" ||
+              code === "1c" ||
+              code === "1e" ||
+              code === "2a");
+    }
+
+    /**
+     * Generates a description string from a given candidate set of codes,
+     * picking a random number of them between min and max.
+     *
+     * The parameter isBirth should be true when processing the Birth section.
+     * In that case, even in the complementary ("negative") branch we filter out
+     * banned codes.
+     */
+    function generateDescriptionFromCandidate(candidates, min, max, isBirth) {
+      // Ensure min and max do not exceed the available candidate count.
+      const total = candidates.length;
+      min = Math.min(parseInt(min, 10) || 1, total);
+      max = Math.min(parseInt(max, 10) || total, total);
+      if (min > max) min = max;
+      
+      // Pick a random number in the range [min, max].
+      const numToChoose = Math.floor(Math.random() * (max - min + 1)) + min;
+      
+      // Shuffle candidates and select the first numToChoose.
+      const shuffled = candidates.slice().sort(() => Math.random() - 0.5);
+      const chosenSet = new Set(shuffled.slice(0, numToChoose));
+      
+      let description = "";
+      // Process each group from index 0 to 8.
+      for (let i = 0; i <= 8; i++) {
+        // For this index, start with codes from the candidate list.
+        let groupCodes = candidates.filter(code => code[0] === i.toString())
+                                   .sort((a, b) => a.substring(1).localeCompare(b.substring(1)));
+        // For Birth, extra precaution: filter out banned codes.
+        if (isBirth) {
+          groupCodes = groupCodes.filter(code => !isBanned(code));
+        }
+        if (groupCodes.length === 0) continue;
+        
+        // Compute keys for chosen and not-chosen codes.
+        const chosenKeys = groupCodes.filter(code => chosenSet.has(code)).map(code => code[1]);
+        const notChosenKeys = groupCodes.filter(code => !chosenSet.has(code)).map(code => code[1]);
+        
+        if (chosenKeys.length === groupCodes.length) {
+          // All chosen: output just the index.
+          description += i.toString();
+        } else if (chosenKeys.length === 0) {
+          // None chosen: output nothing.
+          description += "";
+        } else if (chosenKeys.length > notChosenKeys.length) {
+          // Negative representation – for Birth, ensure banned keys don't appear.
+          let complement = notChosenKeys;
+          description += i.toString() + "-" + complement.join('');
+        } else {
+          // Positive representation.
+          description += i.toString() + chosenKeys.join('');
+        }
+      }
+      return description;
+    }
+
+    // Main function that handles generation for both sections.
+    function generateDescriptions() {
+      const preventExplosivity = document.getElementById("preventExplosivity").checked;
+      
+      // For Birth: if prevent explosivity is checked, filter out banned codes.
+      let birthCandidates = codes;
+      if (preventExplosivity) {
+        birthCandidates = codes.filter(code => !isBanned(code));
+      }
+      
+      // For Survival, use the full list.
+      const survivalCandidates = codes.slice();
+      
+      // Get Birth parameters.
+      const birthMin = document.getElementById("birthMin").value;
+      const birthMax = document.getElementById("birthMax").value;
+      
+      // Get Survival parameters.
+      const survivalMin = document.getElementById("survivalMin").value;
+      const survivalMax = document.getElementById("survivalMax").value;
+      
+      // Generate description strings.
+      const birthDescription = generateDescriptionFromCandidate(birthCandidates, birthMin, birthMax, true);
+      const survivalDescription = generateDescriptionFromCandidate(survivalCandidates, survivalMin, survivalMax, false);
+      
+      // Display the results.
+      document.getElementById("birthResult").textContent = birthDescription;
+      document.getElementById("survivalResult").textContent = survivalDescription;
+    }
+
+    document.getElementById("generateBtn").addEventListener("click", generateDescriptions);
+  </script>
+</body>
+</html>
