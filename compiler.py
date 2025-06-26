@@ -1,3 +1,5 @@
+import re
+
 source = ["def fib n",
           "if n < 2",
           "return n",
@@ -11,29 +13,30 @@ source = ["def fib n",
           "print main",
           ]
 
+import re
+
 def parse(lines):
     lines = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
     ast = []
     stack = [ast]
 
     for line in lines:
-        if line.startswith("def "):
-            parts = line.split()
-            func = {"type": "def", "name": parts[1], "arg": parts[2], "body": []}
+        if m := re.match(r"^def (\w+) (\w+)$", line):
+            func = {"type": "def", "name": m[1], "arg": m[2], "body": []}
             stack[-1].append(func)
             stack.append(func["body"])
+        elif m := re.match(r"^if (.+)$", line):
+            node = {"type": "if", "cond": m[1], "body": []}
+            stack[-1].append(node)
+            stack.append(node["body"])
+        elif m := re.match(r"^return (.+)$", line):
+            stack[-1].append({"type": "return", "expr": m[1]})
+        elif m := re.match(r"^print (.+)$", line):
+            stack[-1].append({"type": "print", "expr": m[1]})
+        elif m := re.match(r"^(\w+)\s*=\s*(.+)$", line):
+            stack[-1].append({"type": "assign", "var": m[1], "expr": m[2]})
         elif line == "end":
             stack.pop()
-        elif line.startswith("return "):
-            stack[-1].append({"type": "return", "expr": line[len("return "):]})
-        elif line.startswith("if "):
-            stack[-1].append({"type": "if", "cond": line[len("if "):], "body": []})
-            stack.append(stack[-1][-1]["body"])
-        elif line.startswith("print "):
-            stack[-1].append({"type": "print", "expr": line[len("print "):]})
-        elif "=" in line:
-            var, expr = [x.strip() for x in line.split("=", 1)]
-            stack[-1].append({"type": "assign", "var": var, "expr": expr})
         else:
             raise SyntaxError(f"Unknown line: {line}")
     return ast
