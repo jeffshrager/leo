@@ -1,6 +1,6 @@
 import re
 
-source = ["def fib n",
+fib_source = ["def fib n",
           "if n < 2",
           "return n",
           "end",
@@ -40,6 +40,24 @@ def parse(lines):
         else:
             raise SyntaxError(f"Unknown line: {line}")
     return ast
+
+def display_ast_tree(ast, indent=0):
+    pad = '  ' * indent
+    if isinstance(ast, list):
+        for item in ast:
+            display_ast_tree(item, indent)
+    elif isinstance(ast, dict):
+        print(f"{pad}{{")
+        for key, value in ast.items():
+            print(f"{pad}  {repr(key)}:", end=" ")
+            if isinstance(value, (dict, list)):
+                print()
+                display_ast_tree(value, indent + 2)
+            else:
+                print(repr(value))
+        print(f"{pad}}}")
+    else:
+        print(f"{pad}{repr(ast)}")
 
 counter = 0
 def temp():  # for generating temp variable names
@@ -133,6 +151,34 @@ def compile_all(ast):
     code.extend(main_code)
     code.append("HALT")  # Add this!
     return code
+
+fib_code = [
+    'JMP main',
+    'LABEL fib',
+    'PARAM n',
+    'JGE n 2 tmp1_end',
+    'RET n',
+    'LABEL tmp1_end',
+    'SUB n 1 tmp2',
+    'PUSH tmp2',
+    'CALL fib',
+    'MOV _retval tmp3',
+    'MOV tmp3 a',
+    'SUB n 2 tmp4',
+    'PUSH tmp4',
+    'CALL fib',
+    'MOV _retval tmp5',
+    'MOV tmp5 b',
+    'ADD a b tmp6',
+    'RET tmp6',
+    'LABEL main',
+    'PUSH 9',
+    'CALL fib',
+    'MOV _retval tmp7',
+    'MOV tmp7 main',
+    'PRINT main',
+    'HALT'
+]
 
 
 def run(code):
@@ -250,52 +296,13 @@ def run(code):
     print("=== Program Output ===")
     print("\n".join(output))
 
-def display_ast_tree(ast, indent=0):
-    pad = '  ' * indent
-    if isinstance(ast, list):
-        for item in ast:
-            display_ast_tree(item, indent)
-    elif isinstance(ast, dict):
-        print(f"{pad}{{")
-        for key, value in ast.items():
-            print(f"{pad}  {repr(key)}:", end=" ")
-            if isinstance(value, (dict, list)):
-                print()
-                display_ast_tree(value, indent + 2)
-            else:
-                print(repr(value))
-        print(f"{pad}}}")
-    else:
-        print(f"{pad}{repr(ast)}")
 
-
-def print_ast(ast, indent=0):
-    pad = '  ' * indent
-    for node in ast:
-        if node["type"] == "def":
-            print(f"{pad}def {node['name']} {node['arg']}")
-            print_ast(node["body"], indent + 1)
-            print(f"{pad}end")
-        elif node["type"] == "if":
-            print(f"{pad}if {node['cond']}")
-            print_ast(node["body"], indent + 1)
-            print(f"{pad}end")
-        elif node["type"] == "assign":
-            print(f"{pad}{node['var']} = {node['expr']}")
-        elif node["type"] == "return":
-            print(f"{pad}return {node['expr']}")
-        elif node["type"] == "print":
-            print(f"{pad}print {node['expr']}")
-        else:
-            print(f"{pad}??? {node}")
-
-
-def test():
+def test_full(source):
   ast = parse(source)
   display_ast_tree(ast)
   code = compile_all(ast)
   print(code)
   run(code)
 
-test()
-
+#test_full(fib_source)
+run(fib_code)
