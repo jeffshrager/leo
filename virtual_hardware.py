@@ -1,5 +1,5 @@
 class VirtualHardware:
-    def __init__(self, memory_size=1024, stack_size=512):
+    def __init__(self, memory_size=512, stack_size=16):
         # Hardware components
         self.memory = [0] * memory_size      # Main memory
         self.registers = [0] * 16            # General purpose registers R0-R15
@@ -37,8 +37,23 @@ class VirtualHardware:
             print(f"  {name} => PC {addr}")
         print("=================")
     
+    def is_temp_var(self, var_name):
+        """Check if variable is a temporary (tmp1, tmp2, etc.)"""
+        return var_name.startswith('tmp') and var_name[3:].isdigit()
+    
+    def get_temp_register(self, var_name):
+        """Get register number for temp variable (tmp1 -> R1, tmp2 -> R2, etc.)"""
+        if self.is_temp_var(var_name):
+            temp_num = int(var_name[3:])
+            return temp_num % 16  # Wrap around if we have more than 16 temps
+        return None
+    
     def get_var_addr(self, var_name):
         """Get memory address for variable in current scope, allocate if new"""
+        # Temp variables don't get memory addresses - they use registers
+        if self.is_temp_var(var_name):
+            return None
+            
         # Look in current scope first
         current_scope = self.scope_stack[-1]
         if var_name in current_scope:
@@ -51,18 +66,28 @@ class VirtualHardware:
         return addr
     
     def eval_arg(self, arg):
-        """Evaluate argument - could be literal number or variable"""
+        """Evaluate argument - could be literal number, register, or memory variable"""
         if arg.isdigit() or (arg.startswith('-') and arg[1:].isdigit()):
             return int(arg)
+        elif self.is_temp_var(arg):
+            # It's a temp variable - get from register
+            reg_num = self.get_temp_register(arg)
+            return self.registers[reg_num]
         else:
-            # It's a variable - get from memory using current scope
+            # It's a regular variable - get from memory
             addr = self.get_var_addr(arg)
             return self.memory[addr]
     
     def set_var(self, var_name, value):
-        """Set variable value in memory using current scope"""
-        addr = self.get_var_addr(var_name)
-        self.memory[addr] = value
+        """Set variable value in register or memory"""
+        if self.is_temp_var(var_name):
+            # It's a temp variable - store in register
+            reg_num = self.get_temp_register(var_name)
+            self.registers[reg_num] = value
+        else:
+            # It's a regular variable - store in memory
+            addr = self.get_var_addr(var_name)
+            self.memory[addr] = value
     
     def push(self, value):
         """Push value onto hardware stack"""
@@ -93,6 +118,10 @@ class VirtualHardware:
             
             print(f"[PC={self.pc:02}] [SP={self.sp:02}] {instr}")
             
+            #print(self.registers)
+            #print(self.stack)
+            #print(self.memory)
+
             if op == "LABEL":
                 pass  # No-op in execution
                 
@@ -112,7 +141,8 @@ class VirtualHardware:
                 # MOV src dst
                 val = self.eval_arg(parts[1])
                 self.set_var(parts[2], val)
-                print(f"  → MOV {parts[2]} = {val}")
+                dest_loc = "register" if self.is_temp_var(parts[2]) else "memory"
+                print(f"  → MOV {parts[2]} = {val} ({dest_loc})")
                 
             elif op == "ADD":
                 # ADD a b dst
@@ -120,7 +150,8 @@ class VirtualHardware:
                 b = self.eval_arg(parts[2])
                 result = a + b
                 self.set_var(parts[3], result)
-                print(f"  → ADD {a} + {b} = {result} → {parts[3]}")
+                dest_loc = "register" if self.is_temp_var(parts[3]) else "memory"
+                print(f"  → ADD {a} + {b} = {result} → {parts[3]} ({dest_loc})")
                 
             elif op == "SUB":
                 # SUB a b dst
@@ -128,7 +159,8 @@ class VirtualHardware:
                 b = self.eval_arg(parts[2])
                 result = a - b
                 self.set_var(parts[3], result)
-                print(f"  → SUB {a} - {b} = {result} → {parts[3]}")
+                dest_loc = "register" if self.is_temp_var(parts[3]) else "memory"
+                print(f"  → SUB {a} - {b} = {result} → {parts[3]} ({dest_loc})")
                 
             elif op == "RET":
                 # Return value and jump back
@@ -193,10 +225,14 @@ class VirtualHardware:
         print(f"PC: {self.pc}")
         print(f"SP: {self.sp}")
         print(f"Active scopes: {len(self.scope_stack)}")
-        print(f"Variables in current scope:")
+        print(f"Memory variables in current scope:")
         current_scope = self.scope_stack[-1]
         for var, addr in current_scope.items():
             print(f"  {var} @ addr {addr} = {self.memory[addr]}")
+        print(f"Registers in use:")
+        for i, val in enumerate(self.registers):
+            if val != 0:  # Only show non-zero registers
+                print(f"  R{i} = {val}")
 
 
 # Test with the fibonacci bytecode
