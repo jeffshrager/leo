@@ -13,7 +13,29 @@ fib_source = ["def fib n",
           "print main",
           ]
 
-import re
+even_odd_source = [
+    "def is_even n",
+    "if n < 1",
+    "return 1",
+    "end", 
+    "return is_odd n - 1",
+    "end",
+    "",
+    "def is_odd n", 
+    "if n < 1",
+    "return 0",
+    "end",
+    "return is_even n - 1", 
+    "end",
+    "",
+    "result = is_even 6",
+    "print result",
+    "result = is_even 5",
+    "print result",
+]
+
+# Global set to track function names
+function_names = set()
 
 def parse(lines):
     lines = [l.strip() for l in lines if l.strip() and not l.strip().startswith("#")]
@@ -23,6 +45,7 @@ def parse(lines):
     for line in lines:
         if m := re.match(r"^def (\w+) (\w+)$", line):
             func = {"type": "def", "name": m[1], "arg": m[2], "body": []}
+            function_names.add(m[1])  # Add this line
             stack[-1].append(func)
             stack.append(func["body"])
         elif m := re.match(r"^if (.+)$", line):
@@ -68,11 +91,11 @@ def temp():  # for generating temp variable names
 def compile_expr(expr):
     expr = expr.strip()
 
-    # handle function calls like "fib 5" or "fib n - 1"
-    if expr.startswith("fib "):
-        parts = expr.split()
-        fn_name = parts[0]
-        arg_expr = " ".join(parts[1:])
+    # Check if this is a function call (generalized)
+    words = expr.split()
+    if len(words) >= 2 and words[0] in function_names:
+        fn_name = words[0]
+        arg_expr = " ".join(words[1:])
         arg_tmp, arg_code = compile_expr(arg_expr)
         tmp = temp()
         return tmp, arg_code + [
@@ -304,5 +327,5 @@ def test_full(source):
   print(code)
   run(code)
 
-#test_full(fib_source)
-run(fib_code)
+test_full(fib_source)
+#test_full(even_odd_source)
