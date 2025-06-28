@@ -236,38 +236,74 @@ class VirtualHardware:
 
 
 # Test with the fibonacci bytecode
-def test_virtual_hardware():
-    fib_code = [
-        'JMP main',
-        'LABEL fib',
-        'PARAM n',
-        'JGE n 2 tmp1_end',
-        'RET n',
-        'LABEL tmp1_end',
-        'SUB n 1 tmp2',
-        'PUSH tmp2',
-        'CALL fib',
-        'MOV _retval tmp3',
-        'MOV tmp3 a',
-        'SUB n 2 tmp4',
-        'PUSH tmp4',
-        'CALL fib',
-        'MOV _retval tmp5',
-        'MOV tmp5 b',
-        'ADD a b tmp6',
-        'RET tmp6',
-        'LABEL main',
-        'PUSH 9',
-        'CALL fib',
-        'MOV _retval tmp7',
-        'MOV tmp7 main',
-        'PRINT main',
-        'HALT'
-    ]
-    
+def test_vh(code):
     vm = VirtualHardware()
-    vm.load_program(fib_code)
+    vm.load_program(code)
     vm.run()
 
-if __name__ == "__main__":
-    test_virtual_hardware()
+fib_code = [
+    'JMP main',
+    'LABEL fib',
+    'PARAM n',
+    'JGE n 2 tmp1_end',
+    'RET n',
+    'LABEL tmp1_end',
+    'SUB n 1 tmp2',
+    'PUSH tmp2',
+    'CALL fib',
+    'MOV _retval tmp3',
+    'MOV tmp3 a',
+    'SUB n 2 tmp4',
+    'PUSH tmp4',
+    'CALL fib',
+    'MOV _retval tmp5',
+    'MOV tmp5 b',
+    'ADD a b tmp6',
+    'RET tmp6',
+    'LABEL main',
+    'PUSH 9',
+    'CALL fib',
+    'MOV _retval tmp7',
+    'MOV tmp7 main',
+    'PRINT main',
+    'HALT'
+]
+
+even_odd_code = [
+    'JMP main',
+    'LABEL is_even',
+    'PARAM n',
+    'JGE n 2 tmp1_end',
+    'RET 1',
+    'LABEL tmp1_end',
+    'SUB n 1 tmp2',
+    'PUSH tmp2',
+    'CALL is_odd',
+    'MOV _retval tmp3',
+    'RET tmp3',
+    'LABEL is_odd',
+    'PARAM n',
+    'JGE n 2 tmp4_end',
+    'RET 0',
+    'LABEL tmp4_end',
+    'SUB n 1 tmp5',
+    'PUSH tmp5',
+    'CALL is_even',
+    'MOV _retval tmp6',
+    'RET tmp6',
+    'LABEL main',
+    'PUSH 6',
+    'CALL is_even',
+    'MOV _retval tmp7',
+    'MOV tmp7 result',
+    'PRINT result',
+    'PUSH 5',
+    'CALL is_even',
+    'MOV _retval tmp8',
+    'MOV tmp8 result',
+    'PRINT result',
+    'HALT'
+]
+
+#test_vh(fib_code)
+test_vh(even_odd_code)

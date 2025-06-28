@@ -327,5 +327,5 @@ def test_full(source):
   print(code)
   run(code)
 
-test_full(fib_source)
-#test_full(even_odd_source)
+#test_full(fib_source)
+test_full(even_odd_source)
