@@ -249,6 +249,7 @@
         <!-- Slide 4: Our Simple Language -->
         <div class="slide">
             <h2>Our Simple Language</h2>
+<pre>
             <div class="code-block">
 def fib n
   if n < 2
@@ -262,6 +263,7 @@ end
 main = fib 9
 print main
             </div>
+</pre>
             <p>Features: functions, conditionals, arithmetic, recursion</p>
         </div>
 
@@ -280,6 +282,7 @@ end
                 </div>
                 <div>
                     <h3>AST:</h3>
+<pre>
                     <div class="code-block">
 {
   "type": "def",
@@ -293,6 +296,8 @@ end
   ]
 }
                     </div>
+</pre>
+
                 </div>
             </div>
         </div>
@@ -300,6 +305,7 @@ end
         <!-- Slide 6: Parser Implementation -->
         <div class="slide">
             <h2>Parser Implementation</h2>
+<pre>
             <div class="code-block">
 def parse(lines):
     ast = []
@@ -315,6 +321,7 @@ def parse(lines):
             stack.pop()  # Exit current scope
         # ... handle other constructs
             </div>
+</pre>
             <p>Uses a <span class="highlight">stack</span> to track nested scopes</p>
         </div>
 
@@ -325,18 +332,21 @@ def parse(lines):
             <div class="example-box">
                 <h3>Expression: "fib n - 1"</h3>
                 <p>Becomes:</p>
+<pre>
                 <div class="code-block">
 SUB n 1 tmp2        # tmp2 = n - 1
 PUSH tmp2           # Push argument
 CALL fib            # Call function
 MOV _retval tmp3    # Store result
                 </div>
+</pre>
             </div>
         </div>
 
         <!-- Slide 8: Function Call Handling -->
         <div class="slide">
             <h2>Function Call Recognition</h2>
+<pre>
             <div class="code-block">
 # Global set to track all defined functions
 function_names = set()
@@ -351,6 +361,7 @@ if words[0] in function_names:
     # This is a function call!
     compile_function_call(words[0], words[1:])
             </div>
+</pre>
             <p>Key insight: <span class="highlight">Collect all function names first</span>, then recognize calls</p>
         </div>
 
@@ -383,6 +394,7 @@ if words[0] in function_names:
         <!-- Slide 10: Function Call Mechanism -->
         <div class="slide">
             <h2>Function Call Mechanism</h2>
+<pre>
             <div class="code-block">
 PUSH arg           # 1. Push argument
 CALL function      # 2. Jump to function
@@ -391,6 +403,7 @@ CALL function      # 2. Jump to function
   RET value        # 4. Return with value
 # 5. Resume here with result in _retval
             </div>
+</pre>
             <p>Uses <span class="highlight">environment stack</span> for local variables</p>
             <p>Each function call gets its own <span class="highlight">scope</span></p>
         </div>
@@ -398,6 +411,7 @@ CALL function      # 2. Jump to function
         <!-- Slide 11: Mutual Recursion -->
         <div class="slide">
             <h2>Mutual Recursion Example</h2>
+<pre>
             <div class="code-block">
 def is_even n
   if n < 1
@@ -413,6 +427,7 @@ def is_odd n
   return is_even n - 1
 end
             </div>
+</pre>
             <p><span class="highlight">is_even</span> calls <span class="highlight">is_odd</span>, and vice versa!</p>
             <p>Works because we collect all function names during parsing</p>
         </div>
@@ -420,6 +435,7 @@ end
         <!-- Slide 12: Execution Trace -->
         <div class="slide">
             <h2>Execution Trace: is_even(2)</h2>
+<pre>
             <div class="code-block">
 [PC=15] PUSH 2           → push argument => 2
 [PC=16] CALL is_even     → pop arg => 2, jump to is_even
@@ -432,6 +448,7 @@ end
 [PC=13] PUSH 0           → push argument => 0
 [PC=14] CALL is_even     → pop arg => 0, jump to is_even
             </div>
+</pre>
             <p>Deep recursion with multiple function calls!</p>
         </div>
 

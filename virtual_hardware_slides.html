@@ -381,6 +381,7 @@
         <!-- Slide 5: Key Innovation: temp variables -->
         <div class="slide">
             <h2>Smart Variable Allocation</h2>
+	    <pre>
             <div class="code-block">
 def is_temp_var(self, var_name):
     """Check if variable is a temporary (tmp1, tmp2, etc.)"""
@@ -393,6 +394,7 @@ def get_temp_register(self, var_name):
         return temp_num % 16  # Wrap around if we have more than 16 temps
     return None
             </div>
+	    </pre>
             <p><span class="highlight">Temporary variables</span> → Fast registers</p>
             <p><span class="highlight">Named variables</span> → Memory addresses</p>
             <p>Just like real compilers optimize!</p>
@@ -401,6 +403,7 @@ def get_temp_register(self, var_name):
         <!-- Slide 6: Scoping System -->
         <div class="slide">
             <h2>Dynamic Scoping with Hardware</h2>
+<pre>
             <div class="code-block">
 # Scoping stack for function calls
 self.scope_stack = [{}]  # Stack of variable scopes
@@ -417,6 +420,7 @@ def get_var_addr(self, var_name):
     current_scope[var_name] = addr
     return addr
             </div>
+</pre>
             <p>Each function call gets its own <span class="highlight">variable namespace</span></p>
         </div>
 
@@ -438,6 +442,7 @@ def get_var_addr(self, var_name):
                 </div>
                 <div>
                     <h3>Stack Operations:</h3>
+<pre>
                     <div class="code-block">
 def push(self, value):
     self.stack[self.sp] = value
@@ -447,6 +452,7 @@ def pop(self):
     self.sp -= 1
     return self.stack[self.sp]
                     </div>
+</pre>
                     <p>Hardware stack grows <span class="highlight">upward</span></p>
                     <p>Automatic <span class="highlight">overflow detection</span></p>
                 </div>
@@ -458,6 +464,7 @@ def pop(self):
             <h2>Hardware Function Call Protocol</h2>
             <div class="example-box">
                 <h3>Calling fib(7):</h3>
+<pre>
                 <div class="code-block">
 PUSH 7           # 1. Push argument onto hardware stack
 CALL fib         # 2. CALL instruction:
@@ -471,6 +478,7 @@ PARAM n          # 3. In function: pop arg, store in variable
 ... function body ...
 RET result       # 4. Return: pop scope, jump back
                 </div>
+</pre>
             </div>
             <p>Hardware manages the <span class="highlight">calling convention</span> automatically</p>
         </div>
@@ -481,6 +489,7 @@ RET result       # 4. Return: pop scope, jump back
             <div class="two-column">
                 <div>
                     <h3>Register Access (Fast):</h3>
+<pre>
                     <div class="code-block">
 # tmp2 = n - 1
 SUB n 1 tmp2
@@ -489,11 +498,13 @@ SUB n 1 tmp2
 reg_num = 2  # tmp2 -> R2
 self.registers[2] = n_val - 1
                     </div>
+</pre>
                     <p><span class="highlight">Direct access</span> to register</p>
                     <p><span class="highlight">1 cycle</span> operation</p>
                 </div>
                 <div>
                     <h3>Memory Access (Slower):</h3>
+<pre>
                     <div class="code-block">
 # a = tmp2
 MOV tmp2 a
@@ -503,6 +514,7 @@ addr = self.get_var_addr('a')
 val = self.registers[2]
 self.memory[addr] = val
                     </div>
+</pre>
                     <p><span class="highlight">Address lookup</span> required</p>
                     <p><span class="highlight">Multiple cycles</span> simulated</p>
                 </div>
@@ -533,6 +545,7 @@ self.memory[addr] = val
             <p>is_even(2) → is_odd(1) → is_even(0)</p>
             <div class="example-box">
                 <h3>Stack Growth During Recursion:</h3>
+<pre>
                 <div class="code-block">
 Call is_even(2):  [ret_addr=17, arg=2]           SP=2
 Call is_odd(1):   [ret_addr=17, arg=2, ret_addr=9, arg=1]    SP=4  
@@ -541,6 +554,7 @@ Return 1:         [..., ret_addr=9, arg=1]      SP=4
 Return 1:         [ret_addr=17, arg=2]           SP=2
 Return 1:         []                             SP=0
                 </div>
+</pre>
             </div>
             <p>Hardware stack automatically manages <span class="highlight">nested calls</span></p>
         </div>
@@ -548,6 +562,7 @@ Return 1:         []                             SP=0
         <!-- Slide 12: Memory Management -->
         <div class="slide">
             <h2>Automatic Memory Management</h2>
+<pre>
             <div class="code-block">
 def CALL(self, function_name):
     # ... setup call ...
@@ -561,7 +576,7 @@ def RET(self, value):
             <p>No manual memory management needed!</p>
             <p>Simulates <span class="highlight">stack allocation</span> in real processors</p>
         </div>
-
+</pre>
         <!-- Slide 13: Hardware Debugging -->
         <div class="slide">
             <h2>Hardware-Level Debugging</h2>
