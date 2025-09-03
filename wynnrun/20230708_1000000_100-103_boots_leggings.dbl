@@ -1,0 +1,190 @@
+/Users/jeffshrager/Desktop/etc/wynnbuilder: lisp
+(load "craft.lisp")
+(load "craft.lisp")
+
+
+==================================
+(LEVEL (100 103) TYPE "BOOTS" SKILL "TAILORING" MATERIALS
+ ((ITEM "Refined Voidstone Ingot" AMOUNT 6)
+  (ITEM "Refined Hemp String" AMOUNT 12))
+ HEALTHORDAMAGE (3250 3300) DURABILITY (522 525) ID "Boots-100-103")
+==================================
+
+0.0 50.40812 51.16211 71.276985 74.42654 88.61823 91.092064 94.66592 99.76783 100.78719 118.639755 131.84612 133.0 142.96294 165.51393 Recipe: (LEVEL
+                                                                                                                                                (100
+                                                                                                                                                 103)
+                                                                                                                                                TYPE
+                                                                                                                                                "BOOTS"
+                                                                                                                                                SKILL
+                                                                                                                                                "TAILORING"
+                                                                                                                                                MATERIALS
+                                                                                                                                                ((ITEM
+                                                                                                                                                  "Refined Voidstone Ingot"
+                                                                                                                                                  AMOUNT
+                                                                                                                                                  6)
+                                                                                                                                                 (ITEM
+                                                                                                                                                  "Refined Hemp String"
+                                                                                                                                                  AMOUNT
+                                                                                                                                                  12))
+                                                                                                                                                HEALTHORDAMAGE
+                                                                                                                                                (3250
+                                                                                                                                                 3300)
+                                                                                                                                                DURABILITY
+                                                                                                                                                (522
+                                                                                                                                                 525)
+                                                                                                                                                ID
+                                                                                                                                                "Boots-100-103")
+
+Mat_tiers: (2 3)
+
+Ingreds: ((NAME "Incremental Mapping Module" TIER 3 SKILLS
+           ("ARMOURING" "TAILORING") LEVEL 90 IDS
+           (MR (6 6) SPD (16 20) HPBONUS (-750 -650)) ITEMIDS
+           (DURA -149 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 60)
+           CONSUMABLEIDS (CHARGES 0 DURA 0) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 605)
+          (NAME "Pride of the Heights" TIER 3 SKILLS
+           ("TAILORING" "WOODWORKING" "ALCHEMISM") LEVEL 95 IDS NIL ITEMIDS
+           (DURA -157 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA -280) POSMODS
+           (LEFT 130 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 632)
+          (NAME "Decaying Skin" TIER 0 SKILLS ("TAILORING") LEVEL 22 IDS
+           (POISON (6 6)) ITEMIDS
+           (DURA -24 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA 0) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 41)
+          NIL
+          (NAME "Toxxulous Ripper’s Legs" TIER 2 SKILLS ("TAILORING" "COOKING")
+           LEVEL 103 IDS (DEF (-6 -4) SPD (7 10) MDRAW (35 35)) ITEMIDS
+           (DURA -90 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 15)
+           CONSUMABLEIDS (CHARGES 0 DURA -580) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 545)
+          NIL)
+
+Atkspd: "fast"
+
+Flat-eff-mult: (230 100 100 100 100 100)
+
+Statmap:
+  crafted = T
+  skillpoints = (0 0 0 -4 0)
+  reqs = (0 0 0 0 153)
+  ingredeffectiveness = (230 100 100 100 100 100)
+  charges = 1
+  slots = 3
+  category = armor
+  agireq = 153
+  def = -4
+  hplow = 4387
+  hp = 4454
+  levellow = 100
+  level = 103
+  durability = (285 289)
+  duration = (-860 -860)
+  type = boots
+  tier = crafted
+  displayname = hash????????????????
+  name = hash???????????????
+  MDRAW : 35 - 35
+  DEF : -6 - -4
+  POISON : 6 - 6
+  HPBONUS : -1725 - -1495
+  SPD : 43.0 - 56.0
+  MR : 13 - 13
+Score = 165.51393
+
+
+==================================
+(LEVEL (100 103) TYPE "LEGGINGS" SKILL "TAILORING" MATERIALS
+ ((ITEM "Refined Voidstone Ingot" AMOUNT 12)
+  (ITEM "Refined Hemp String" AMOUNT 6))
+ HEALTHORDAMAGE (3250 3300) DURABILITY (522 525) ID "Leggings-100-103")
+==================================
+
+0.0 56.217903 57.855774 72.00275 91.67694 132.58255 147.87233 159.16888 159.23853 Recipe: (LEVEL
+                                                                                           (100
+                                                                                            103)
+                                                                                           TYPE
+                                                                                           "LEGGINGS"
+                                                                                           SKILL
+                                                                                           "TAILORING"
+                                                                                           MATERIALS
+                                                                                           ((ITEM
+                                                                                             "Refined Voidstone Ingot"
+                                                                                             AMOUNT
+                                                                                             12)
+                                                                                            (ITEM
+                                                                                             "Refined Hemp String"
+                                                                                             AMOUNT
+                                                                                             6))
+                                                                                           HEALTHORDAMAGE
+                                                                                           (3250
+                                                                                            3300)
+                                                                                           DURABILITY
+                                                                                           (522
+                                                                                            525)
+                                                                                           ID
+                                                                                           "Leggings-100-103")
+
+Mat_tiers: (2 3)
+
+Ingreds: (NIL
+          (NAME "Werewolf Tail" TIER 0 SKILLS ("TAILORING" "ALCHEMISM") LEVEL
+           72 IDS (DEF (-3 -1) SPD (2 3)) ITEMIDS
+           (DURA -42 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA -78) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 185)
+          (NAME "Corrupted Fragment" TIER 3 SKILLS
+           ("TAILORING" "ARMOURING" "WOODWORKING" "WEAPONSMITHING") LEVEL 7 IDS
+           (INT (-4 -3) SPD (4 6) MDRAW (12 16)) ITEMIDS
+           (DURA -59 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA 0) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 578)
+          (NAME "Cat Tail" TIER 1 SKILLS ("TAILORING") LEVEL 83 IDS (SPD (3 5))
+           ITEMIDS (DURA -70 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA 0) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 213)
+          (NAME "Feather of Grace" TIER 2 SKILLS ("TAILORING" "JEWELING") LEVEL
+           8 IDS (SPD (3 3)) ITEMIDS
+           (DURA -40 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA 0) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 427)
+          (NAME "Horse Mane" TIER 1 SKILLS ("TAILORING" "SCRIBING") LEVEL 22
+           IDS (AGI (1 1) SPD (2 4)) ITEMIDS
+           (DURA -35 STRREQ 0 DEXREQ 0 INTREQ 0 DEFREQ 0 AGIREQ 0)
+           CONSUMABLEIDS (CHARGES 0 DURA -69) POSMODS
+           (LEFT 0 RIGHT 0 ABOVE 0 UNDER 0 TOUCHING 0 NOTTOUCHING 0) ID 255))
+
+Atkspd: "normal"
+
+Flat-eff-mult: (100 100 100 100 100 100)
+
+Statmap:
+  crafted = T
+  skillpoints = (0 0 -3 -1 1)
+  reqs = (0 0 0 0 0)
+  ingredeffectiveness = (100 100 100 100 100 100)
+  charges = 1
+  slots = 3
+  category = armor
+  agi = 1
+  def = -1
+  int = -3
+  hplow = 4225
+  hp = 4290
+  levellow = 100
+  level = 103
+  durability = (433 436)
+  duration = (-147 -147)
+  type = leggings
+  tier = crafted
+  displayname = hash????????????????
+  name = hash???????????????
+  AGI : 1 - 1
+  MDRAW : 12 - 16
+  INT : -4 - -3
+  SPD : 14.0 - 21.0
+  DEF : -3 - -1
+Score = 159.23853
+T
+* 
